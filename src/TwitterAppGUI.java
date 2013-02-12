@@ -4,6 +4,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -13,9 +14,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.*;
+
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -40,21 +43,27 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	private JPanel tweetPanel;
 	private JPanel timeLinePanel;
 	public boolean login = false;
-	private TweetsTimeLine tweetsTimeLine;
+	//private TweetsTimeLine tweetsTimeLine;
+	private UsersTimeLine usersTimeLine;
 
 
-	public TwitterAppGUI (Twitter t) throws TwitterException {	
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+	public TwitterAppGUI (Twitter t) throws TwitterException, IllegalStateException, MalformedURLException {	
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setSize(500, 1000);
+		//this.setMaximumSize(getSize());
+		//this.setPreferredSize(getSize());
+		this.setMaximizedBounds(new Rectangle(500, 1000));
+		this.setResizable(true);
 		setTitle("Twitter");
 		this.twitter = t;
-		tweetsTimeLine = new TweetsTimeLine(twitter);
+		//tweetsTimeLine = new TweetsTimeLine(twitter);
+		usersTimeLine = new UsersTimeLine(twitter);
 		
 		//timeLinePanel = new JPanel(new BorderLayout());
 		setLayout(new BorderLayout());
 		tweetPanel();
 		timeLinePanel();
-		
-		setSize(500, 800);
+		this.pack();
 		//getContentPane().setLayout(new BorderLayout());
 		setVisible(true);
 
@@ -78,13 +87,19 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		
 		timeLinePanel = new JPanel(new BorderLayout());
 		timeLinePanel.setSize(500, 600);
-		refreshButton = new JButton("Refresh");
-		refreshButton.setSize(90, 20);
-		refreshButton.setMaximumSize(getSize());
-		refreshButton.addActionListener(this);
-		timeLinePanel.add(refreshButton, BorderLayout.NORTH);
-		timeLinePanel.add(tweetsTimeLine.getTimeLinePanel(), BorderLayout.SOUTH);
-		getContentPane().add(timeLinePanel, BorderLayout.CENTER);
+//		refreshButton = new JButton("Refresh");
+//		refreshButton.setSize(90, 20);
+//		refreshButton.addActionListener(this);
+//		timeLinePanel.add(refreshButton, BorderLayout.NORTH);
+//		timeLinePanel.add(tweetsTimeLine.getTimeLinePanel(), BorderLayout.SOUTH);
+		timeLinePanel.add(usersTimeLine.getTimeLinePanel(), BorderLayout.CENTER);
+		
+		JScrollPane scrollPane = new JScrollPane(timeLinePanel,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setSize(500, 600);
+		//jPanel1.add(scrollPane);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		timeLinePanel.validate();
 		validate();
 		
@@ -101,17 +116,17 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-		else if (e.getSource() == refreshButton){
-			try {
-				tweetsTimeLine.updateTimePanel();
-				timeLinePanel.remove(1);
-				timeLinePanel.validate();
-				timeLinePanel.add(tweetsTimeLine.getTimeLinePanel());
-				timeLinePanel.validate();
-				
-			} catch (TwitterException e1) {
-			}
-		}
+//		else if (e.getSource() == refreshButton){
+//			try {
+//				tweetsTimeLine.updateTimePanel();
+//				timeLinePanel.remove(1);
+//				timeLinePanel.validate();
+//				timeLinePanel.add(tweetsTimeLine.getTimeLinePanel());
+//				timeLinePanel.validate();
+//				
+//			} catch (TwitterException e1) {
+//			}
+//		}
 	}
 
 }
