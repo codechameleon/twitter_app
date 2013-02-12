@@ -19,6 +19,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.*;
 
+import net.miginfocom.swing.MigLayout;
+
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -49,61 +51,86 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	public TwitterAppGUI (Twitter t) throws TwitterException, IllegalStateException, MalformedURLException {	
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(500, 1000);
-		//this.setMaximumSize(getSize());
+		this.setSize(400, 700);
+		this.setMaximumSize(new Dimension(400, 700));
 		//this.setPreferredSize(getSize());
-		this.setMaximizedBounds(new Rectangle(500, 1000));
-		this.setResizable(true);
+		//this.setMaximizedBounds(new Rectangle(450, 800));
+		this.setResizable(false);
 		setTitle("Twitter");
 		this.twitter = t;
 		//tweetsTimeLine = new TweetsTimeLine(twitter);
+
 		usersTimeLine = new UsersTimeLine(twitter);
-		
 		//timeLinePanel = new JPanel(new BorderLayout());
-		setLayout(new BorderLayout());
+		setLayout(new MigLayout("wrap 1"));
 		tweetPanel();
 		timeLinePanel();
+
+		refreshButton = new JButton("Resfresh");
+		refreshButton.addActionListener(this);
+		this.add(refreshButton);
 		this.pack();
-		//getContentPane().setLayout(new BorderLayout());
 		setVisible(true);
 
 	}
 	public void tweetPanel() throws TwitterException{
-		tweetPanel = new JPanel(new BorderLayout());
+		tweetPanel = new JPanel();
 		tweetText = new JTextArea(3,27);
 		tweetText.setLineWrap(true);
 		tweetText.setWrapStyleWord(true);
 		JScrollPane scroll = new JScrollPane(tweetText);
 		tweetButton = new JButton("Tweet!");
-		tweetButton.setSize(90, 20);
 		tweetButton.addActionListener(this);
-		tweetPanel.setLayout(new FlowLayout());
-		tweetPanel.add(scroll, BorderLayout.NORTH);
-		tweetPanel.add(tweetButton, BorderLayout.EAST);
-		getContentPane().add(tweetPanel, BorderLayout.NORTH);
+		tweetPanel.setLayout(new MigLayout("wrap 2"));
+		tweetPanel.add(scroll);
+		tweetPanel.add(tweetButton);
+		getContentPane().add(tweetPanel, "dock north");
 	}
 
 	public void timeLinePanel(){
-		
-		timeLinePanel = new JPanel(new BorderLayout());
-		timeLinePanel.setSize(500, 600);
-//		refreshButton = new JButton("Refresh");
-//		refreshButton.setSize(90, 20);
-//		refreshButton.addActionListener(this);
-//		timeLinePanel.add(refreshButton, BorderLayout.NORTH);
-//		timeLinePanel.add(tweetsTimeLine.getTimeLinePanel(), BorderLayout.SOUTH);
-		timeLinePanel.add(usersTimeLine.getTimeLinePanel(), BorderLayout.CENTER);
-		
-		JScrollPane scrollPane = new JScrollPane(timeLinePanel,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setSize(500, 600);
-		//jPanel1.add(scrollPane);
-		getContentPane().add(scrollPane, BorderLayout.CENTER);
-		timeLinePanel.validate();
+		timeLinePanel = new JPanel();
+		try {
+			usersTimeLine.updatePanel();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		timeLinePanel.add(usersTimeLine.getTimeLinePanel());
+		getContentPane().add(timeLinePanel);
 		validate();
-		
+
 	}
+
+	public void timeLinePanelRefresh(){
+		timeLinePanel.removeAll();
+
+		try {
+			usersTimeLine.updatePanel();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		timeLinePanel.add(usersTimeLine.getTimeLinePanel());
+		//timeLinePanel.validate();
+		timeLinePanel.revalidate();
+		//timeLinePanel.invalidate();
+		//timeLinePanel.repaint();
+		//validate();
+
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -116,17 +143,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-//		else if (e.getSource() == refreshButton){
-//			try {
-//				tweetsTimeLine.updateTimePanel();
-//				timeLinePanel.remove(1);
-//				timeLinePanel.validate();
-//				timeLinePanel.add(tweetsTimeLine.getTimeLinePanel());
-//				timeLinePanel.validate();
-//				
-//			} catch (TwitterException e1) {
-//			}
-//		}
+		else if (e.getSource() == refreshButton){
+			timeLinePanelRefresh();
+		}
 	}
 
 }
