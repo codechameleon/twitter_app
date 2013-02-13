@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Button;
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -44,9 +45,15 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	private JButton refreshButton;
 	private JPanel tweetPanel;
 	private JPanel timeLinePanel;
+	private JButton timeLineButton;
+	private JButton usersTimeLineButton;
+	private JButton myTimeLineButton;
 	public boolean login = false;
 	//private TweetsTimeLine tweetsTimeLine;
 	private UsersTimeLine usersTimeLine;
+	private MainTimeLine homeTimeLine;
+	private AtUserTimeLine mentionsTimeLine;
+	private Followers followersPanel;
 
 
 	public TwitterAppGUI (Twitter t) throws TwitterException, IllegalStateException, MalformedURLException {	
@@ -61,18 +68,44 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		//tweetsTimeLine = new TweetsTimeLine(twitter);
 
 		usersTimeLine = new UsersTimeLine(twitter);
+		homeTimeLine = new MainTimeLine(twitter);
+		mentionsTimeLine = new AtUserTimeLine(twitter);
 		//timeLinePanel = new JPanel(new BorderLayout());
 		setLayout(new MigLayout("wrap 1"));
 		tweetPanel();
+		navigationPanel();
 		timeLinePanel();
-
 		refreshButton = new JButton("Resfresh");
 		refreshButton.addActionListener(this);
-		this.add(refreshButton);
+		followersPanel = new Followers(twitter);
+		this.add(followersPanel, "dock east");
+		//this.add(refreshButton);
 		this.pack();
 		setVisible(true);
 
 	}
+	
+	public void navigationPanel(){
+		JPanel naviPanel = new JPanel();
+		usersTimeLineButton = new JButton("Me!");
+		usersTimeLineButton.addActionListener(this);
+		timeLineButton = new JButton("Tweets");
+		timeLineButton.addActionListener(this);
+		myTimeLineButton = new JButton("@ Me");
+		myTimeLineButton.addActionListener(this);
+		JButton followingButton = new JButton("Following");
+		naviPanel.setLayout(new FlowLayout());
+		naviPanel.add(usersTimeLineButton);
+		naviPanel.add(timeLineButton);
+		naviPanel.add(myTimeLineButton);
+		naviPanel.add(followingButton);
+		naviPanel.setBackground(Color.BLACK);
+		naviPanel.setSize(450,40);
+		naviPanel.setMinimumSize(naviPanel.getSize());
+		naviPanel.setMaximumSize(naviPanel.getSize());
+		add(naviPanel);
+	}
+	
 	public void tweetPanel() throws TwitterException{
 		tweetPanel = new JPanel();
 		tweetText = new JTextArea(3,27);
@@ -105,6 +138,44 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		getContentPane().add(timeLinePanel);
 		validate();
 
+	}
+	
+	public void mainTimeLine(){
+		timeLinePanel.removeAll();
+		try {
+			homeTimeLine.updatePanel();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		timeLinePanel.add(homeTimeLine.getTimeLinePanel());
+		//timeLinePanel.validate();
+		timeLinePanel.revalidate();
+	}
+	
+	public void mentionsTimeLine(){
+		timeLinePanel.removeAll();
+		try {
+			mentionsTimeLine.updatePanel();
+		} catch (IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		timeLinePanel.add(mentionsTimeLine.getTimeLinePanel());
+		//timeLinePanel.validate();
+		timeLinePanel.revalidate();
 	}
 
 	public void timeLinePanelRefresh(){
@@ -143,8 +214,17 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				e1.printStackTrace();
 			}
 		}
-		else if (e.getSource() == refreshButton){
+		
+		if (e.getSource() == refreshButton || e.getSource()==usersTimeLineButton){
 			timeLinePanelRefresh();
+		}
+		
+		if (e.getSource()== timeLineButton){
+			mainTimeLine();
+		}
+		
+		if(e.getSource()== myTimeLineButton){
+			mentionsTimeLine();
 		}
 	}
 
