@@ -37,6 +37,7 @@ public class UsersTimeLine extends JPanel {
 	}
 
 	public void updatePanel() throws TwitterException, IllegalStateException, MalformedURLException{
+		this.removeAll();
 		List<Status> statusList = twitter.getUserTimeline();
 		TweetPanel a[] = new TweetPanel[statusList.size()];
 		jPanel1.removeAll();
@@ -51,7 +52,7 @@ public class UsersTimeLine extends JPanel {
 		}
 
 
-
+		
 		JScrollPane scrollPane = new JScrollPane(jPanel1,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);

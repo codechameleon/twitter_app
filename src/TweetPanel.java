@@ -121,6 +121,7 @@ public class TweetPanel extends JPanel implements ActionListener{
 		if(e.getSource() == deleteButton){
 			try {
 				twitter.destroyStatus(tweetID);
+				
 			} catch (TwitterException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
