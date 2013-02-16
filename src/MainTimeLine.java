@@ -8,8 +8,10 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
+
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -53,8 +55,8 @@ public class MainTimeLine extends JPanel {
 
 		
 		JScrollPane scrollPane = new JScrollPane(jPanel1,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setMaximumSize(new Dimension(427, 400));
 		//		validate();
 		//        repaint();

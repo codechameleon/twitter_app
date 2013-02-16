@@ -1,11 +1,6 @@
 package guiDesign;
 
 import java.awt.EventQueue;
-import java.awt.GradientPaint;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,34 +9,20 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
-import javax.swing.ImageIcon;
 import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import javax.swing.JSplitPane;
-import javax.swing.Box;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JTabbedPane;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.border.LineBorder;
-import java.awt.FlowLayout;
-import java.awt.CardLayout;
 import java.awt.GridLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import javax.swing.JInternalFrame;
 import java.awt.Component;
 import java.awt.Dimension;
-import javax.swing.SpringLayout;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JPasswordField;
 import java.awt.Panel;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
-public class Testlogin extends JPanel {
+public class MainFrame extends JPanel {
 
 	private JFrame frame;
 	private final JPanel panel_main = new JPanel();
@@ -56,7 +37,7 @@ public class Testlogin extends JPanel {
 			@Override
 			public void run() {
 				try {
-					Testlogin window = new Testlogin();
+					MainFrame window = new MainFrame();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -68,7 +49,7 @@ public class Testlogin extends JPanel {
 	/**
 	 * Create the application.
 	 */
-	public Testlogin() {
+	public MainFrame() {
 		initialize();
 	}
 	
@@ -205,6 +186,7 @@ public class Testlogin extends JPanel {
 		btnNewButton.setForeground(new Color(0, 204, 255));
 		btnNewButton.setBackground(new Color(51, 51, 51));
 		btnNewButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 			}
 		});

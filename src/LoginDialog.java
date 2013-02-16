@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -32,7 +33,7 @@ public class LoginDialog extends JDialog implements ActionListener, java.awt.eve
 	public LoginDialog() throws TwitterException{
 		setModalityType(DEFAULT_MODALITY_TYPE);
 		promtTxt = new JLabel("Click the following URL and grant access to your account:");
-		oAuthLinkTxt = new JLabel("", JLabel.CENTER);
+		oAuthLinkTxt = new JLabel("", SwingConstants.CENTER);
 		pinRequest = new JLabel("Enter the PIN(if aviailable) or just hit enter.[PIN]:");
 		pin = new JTextField();
 		okButton = new JButton("Authunticate");

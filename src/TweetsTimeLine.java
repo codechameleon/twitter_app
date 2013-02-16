@@ -4,9 +4,9 @@ import twitter4j.TwitterException;
 import twitter4j.Status;
 
 import javax.swing.*;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
@@ -55,8 +55,8 @@ public class TweetsTimeLine implements ActionListener{
 		JList statusJList = new JList(statusArr);
 		statusJList.setFixedCellHeight(20);
 		JScrollPane scrollPane = new JScrollPane(statusJList,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		timeLinePanel.add(scrollPane);
 	}
 
@@ -64,6 +64,7 @@ public class TweetsTimeLine implements ActionListener{
 		return timeLinePanel;
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent event) {
 		try {
 			updateTimePanel();

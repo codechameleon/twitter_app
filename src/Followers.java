@@ -8,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -57,8 +58,8 @@ public class Followers extends JPanel {
             followerPanel.add(thisFollowerPanel);
         }
         followerJScrollPane = new JScrollPane(followerPanel,
-                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(followerJScrollPane);
     }
 

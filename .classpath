@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="twitter4j-core-3.0.3.jar"/>
+	<classpathentry kind="lib" path="/home/mike/Downloads/lib/twitter4j-core-3.0.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="miglayout15-swing.jar" sourcepath="miglayout-src.zip"/>
-	<classpathentry kind="lib" path="swing-layout-1.0.1.jar"/>
+	<classpathentry kind="lib" path="miglayout-4.0-swing.jar"/>
+	<classpathentry kind="lib" path="swing-layout-1.0.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
+	<classpathentry kind="lib" path="easymock-3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

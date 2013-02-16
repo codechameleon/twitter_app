@@ -15,6 +15,7 @@ import javax.swing.JTextArea;
 import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 

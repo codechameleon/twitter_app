@@ -3,6 +3,8 @@ import net.miginfocom.swing.MigLayout;
 
 
 
+
+
 public class UsersTimeLinePanel extends javax.swing.JPanel{
 	public UsersTimeLinePanel() {
         initComponents();
@@ -54,7 +56,8 @@ public class UsersTimeLinePanel extends javax.swing.JPanel{
 
         jButton1.setText("Refresh");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            @Override
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
