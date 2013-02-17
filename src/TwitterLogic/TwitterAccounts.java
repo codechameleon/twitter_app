@@ -1,16 +1,21 @@
+package TwitterLogic;
+
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import twitter4j.Twitter;
 
 
 
-	public class TwitterEngine {
+	public class TwitterAccounts {
 	private ArrayList<Twitter> accounts;
 	
-	public TwitterEngine(){
+	public TwitterAccounts(){
 		accounts = new ArrayList<Twitter>();
 	}
 	

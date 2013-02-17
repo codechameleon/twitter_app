@@ -1,3 +1,5 @@
+package guiDesign;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.net.MalformedURLException;
@@ -11,13 +13,14 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
+
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 
-public class UsersTimeLine extends JPanel {
-	//	private JButton jButton1;
+public class MainTimeLine extends JPanel {
+//	private JButton jButton1;
 	private JPanel jPanel1;
 	private Twitter twitter;
 	private String screenName;
@@ -27,7 +30,7 @@ public class UsersTimeLine extends JPanel {
 	 * @throws IllegalStateException 
 	 * @throws MalformedURLException 
 	 */
-	public UsersTimeLine(Twitter t) throws IllegalStateException, TwitterException, MalformedURLException {
+	public MainTimeLine(Twitter t) throws IllegalStateException, TwitterException, MalformedURLException {
 		this.twitter = t;
 		screenName = twitter.getScreenName();
 		jPanel1 = new JPanel();
@@ -38,7 +41,7 @@ public class UsersTimeLine extends JPanel {
 
 	public void updatePanel() throws TwitterException, IllegalStateException, MalformedURLException{
 		this.removeAll();
-		List<Status> statusList = twitter.getUserTimeline();
+		List<Status> statusList = twitter.getHomeTimeline();
 		TweetPanel a[] = new TweetPanel[statusList.size()];
 		jPanel1.removeAll();
 		jPanel1.setLayout(new MigLayout("wrap 1", "0 [] 0", " 0 [] 0"));

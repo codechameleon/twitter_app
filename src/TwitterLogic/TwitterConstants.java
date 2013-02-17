@@ -2,9 +2,6 @@ package TwitterLogic;
 
 /********************************************************************
  * Constants that are accessed for Twitter 
- * 
- * @author Michael Torres
- *
  *******************************************************************/
 public class TwitterConstants {
 

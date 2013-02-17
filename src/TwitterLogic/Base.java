@@ -1,12 +1,5 @@
 package TwitterLogic;
 
-
-
-
-
-
-
-
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -46,4 +39,5 @@ public class Base {
 		tf = new TwitterFactory(configuration.build());
 		twitter = tf.getInstance();
 	}
+	
 }

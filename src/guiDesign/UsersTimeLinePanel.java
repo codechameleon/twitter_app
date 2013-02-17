@@ -1,3 +1,4 @@
+package guiDesign;
 import net.miginfocom.swing.MigLayout;
 
 

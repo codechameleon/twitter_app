@@ -1,33 +1,43 @@
 package guiDesign;
 
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.Color;
-import javax.swing.SwingConstants;
 import java.awt.BorderLayout;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.border.LineBorder;
-import java.awt.GridLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JPasswordField;
+import java.awt.EventQueue;
+import java.awt.GridLayout;
 import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
+
+import twitter4j.TwitterException;
+
+import net.miginfocom.swing.MigLayout;
+import TwitterLogic.Base;
+import TwitterLogic.TweetUtils;
+import TwitterLogic.TwitterAccounts;
+
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
 
 public class MainFrame extends JPanel {
 
 	private JFrame frame;
 	private final JPanel panel_main = new JPanel();
-	private JTextField textField;
-	private JPasswordField textField_1;
+	private JTextField login_uNameField;
 
 	/**
 	 * Launch the application.
@@ -66,66 +76,88 @@ public class MainFrame extends JPanel {
 		frame.getContentPane().add(panel_main, BorderLayout.CENTER);
 		panel_main.setLayout(new BorderLayout(0, 0));
 		
-		JPanel panel_sidebar = new JPanel();
+		final JPanel panel_sidebar = new JPanel();
 		panel_sidebar.setBorder(new LineBorder(new Color(0, 204, 255), 1, true));
 		panel_sidebar.setBackground(new Color(51, 51, 51));
 		panel_main.add(panel_sidebar, BorderLayout.WEST);
 		panel_sidebar.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		JLabel lblNewLabel_1 = new JLabel("Accounts");
-		lblNewLabel_1.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_1.setForeground(new Color(0, 204, 255));
-		lblNewLabel_1.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_1);
+		final LoginPanel panel_login = new LoginPanel();
+		panel_main.add(panel_login,BorderLayout.CENTER);
 		
-		JLabel label = new JLabel("");
-		label.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label);
+		JLabel lblLogin = new JLabel("Login");
+		lblLogin.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				panel_main.removeAll();
+				panel_main.add(panel_sidebar,BorderLayout.WEST);
+				panel_main.add(panel_login,BorderLayout.CENTER);
+				frame.validate();
+			}
+		});
+		lblLogin.setHorizontalAlignment(SwingConstants.CENTER);
+		lblLogin.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblLogin);
 		
-		JLabel lblNewLabel = new JLabel("Timeline");
-		lblNewLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel.setForeground(new Color(0, 204, 255));
-		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel);
+		JLabel lblblank_9 = new JLabel("");
+		panel_sidebar.add(lblblank_9);
 		
-		JLabel label_1 = new JLabel("");
-		label_1.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_1.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_1);
+		JLabel lblAccount = new JLabel("Account");
+		lblAccount.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblAccount.setForeground(new Color(0, 204, 255));
+		lblAccount.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblAccount);
 		
-		JLabel lblNewLabel_2 = new JLabel("Mentions");
-		lblNewLabel_2.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_2.setForeground(new Color(0, 204, 255));
-		lblNewLabel_2.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_2);
+		JLabel label_blank = new JLabel("");
+		label_blank.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		label_blank.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(label_blank);
 		
-		JLabel label_2 = new JLabel("");
-		label_2.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_2.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_2);
+		JLabel lblTimeline = new JLabel("Timeline");
 		
-		JLabel lblNewLabel_4 = new JLabel("Messages");
-		lblNewLabel_4.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_4.setForeground(new Color(0, 204, 255));
-		lblNewLabel_4.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_4);
 		
-		JLabel label_3 = new JLabel("");
-		label_3.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_3.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_3);
+		lblTimeline.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblTimeline.setForeground(new Color(0, 204, 255));
+		lblTimeline.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblTimeline);
 		
-		JLabel lblNewLabel_5 = new JLabel("Favorites");
-		lblNewLabel_5.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_5.setForeground(new Color(0, 204, 255));
-		lblNewLabel_5.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_5);
+		JLabel lblBlank_2 = new JLabel("");
+		lblBlank_2.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_2.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_2);
 		
-		JLabel label_4 = new JLabel("");
-		label_4.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_4.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_4);
+		JLabel lblMentions = new JLabel("Mentions");
+		lblMentions.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblMentions.setForeground(new Color(0, 204, 255));
+		lblMentions.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblMentions);
+		
+		JLabel lblBlank_3 = new JLabel("");
+		lblBlank_3.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_3.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_3);
+		
+		JLabel lblMesssages = new JLabel("Messages");
+		lblMesssages.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblMesssages.setForeground(new Color(0, 204, 255));
+		lblMesssages.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblMesssages);
+		
+		JLabel lblBlank_5 = new JLabel("");
+		lblBlank_5.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_5.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_5);
+		
+		JLabel lblFavorites = new JLabel("Favorites");
+		lblFavorites.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblFavorites.setForeground(new Color(0, 204, 255));
+		lblFavorites.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblFavorites);
+		
+		JLabel lblBlank_6 = new JLabel("");
+		lblBlank_6.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_6.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_6);
 		
 		JLabel lblMyTweets = new JLabel("My Tweets");
 		lblMyTweets.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -133,73 +165,32 @@ public class MainFrame extends JPanel {
 		lblMyTweets.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_sidebar.add(lblMyTweets);
 		
-		JLabel label_5 = new JLabel("");
-		label_5.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_5.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_5);
+		JLabel lblBlank_7 = new JLabel("");
+		lblBlank_7.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_7.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_7);
 		
-		JLabel lblNewLabel_6 = new JLabel("Retweets");
-		lblNewLabel_6.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_6.setForeground(new Color(0, 204, 255));
-		lblNewLabel_6.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_6);
+		JLabel lblRetweets = new JLabel("Retweets");
+		lblRetweets.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblRetweets.setForeground(new Color(0, 204, 255));
+		lblRetweets.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblRetweets);
 		
-		JLabel label_6 = new JLabel("");
-		label_6.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		label_6.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(label_6);
+		JLabel lblBlank_8 = new JLabel("");
+		lblBlank_8.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_8.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_8);
 		
-		JLabel lblNewLabel_7 = new JLabel("Photos");
-		lblNewLabel_7.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_7.setForeground(new Color(0, 204, 255));
-		lblNewLabel_7.setHorizontalAlignment(SwingConstants.CENTER);
-		panel_sidebar.add(lblNewLabel_7);
+		JLabel lblPhotos = new JLabel("Photos");
+		lblPhotos.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblPhotos.setForeground(new Color(0, 204, 255));
+		lblPhotos.setHorizontalAlignment(SwingConstants.CENTER);
+		panel_sidebar.add(lblPhotos);
 		
-		JLabel lblNewLabel_3 = new JLabel("");
-		lblNewLabel_3.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		lblNewLabel_3.setForeground(new Color(0, 204, 255));
-		panel_sidebar.add(lblNewLabel_3);
-		
-		JPanel panel_login = new JPanel();
-		panel_login.setBackground(new Color(102, 102, 102));
-		panel_main.add(panel_login, BorderLayout.CENTER);
-		panel_login.setLayout(new MigLayout("", "[grow][][grow 50][][grow]", "[grow][][][][grow]"));
-		
-		JLabel lblNewLabel_8 = new JLabel("User Name");
-		lblNewLabel_8.setForeground(new Color(0, 204, 255));
-		lblNewLabel_8.setAlignmentX(Component.RIGHT_ALIGNMENT);
-		panel_login.add(lblNewLabel_8, "cell 1 1,growx");
-		
-		textField = new JTextField();
-		panel_login.add(textField, "cell 2 1,growx");
-		textField.setColumns(10);
-		
-		JLabel lblNewLabel_9 = new JLabel("Password");
-		lblNewLabel_9.setForeground(new Color(0, 204, 255));
-		panel_login.add(lblNewLabel_9, "cell 1 2,alignx trailing");
-		
-		textField_1 = new JPasswordField();
-		panel_login.add(textField_1, "cell 2 2,growx");
-		textField_1.setColumns(10);
-		
-		JButton btnNewButton = new JButton("Sign In");
-		btnNewButton.setForeground(new Color(0, 204, 255));
-		btnNewButton.setBackground(new Color(51, 51, 51));
-		btnNewButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-			}
-		});
-		btnNewButton.setVerticalAlignment(SwingConstants.TOP);
-		panel_login.add(btnNewButton, "cell 2 4,growx");
-		
-		Panel panel = new Panel();
-		panel.setEnabled(false);
-		panel.setVisible(false);
-		panel_main.add(panel, BorderLayout.NORTH);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		panel.add(scrollPane);
+		JLabel lblBlank_9 = new JLabel("");
+		lblBlank_9.setAlignmentX(Component.RIGHT_ALIGNMENT);
+		lblBlank_9.setForeground(new Color(0, 204, 255));
+		panel_sidebar.add(lblBlank_9);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setBorder(new LineBorder(new Color(0, 204, 255), 1, true));
@@ -214,10 +205,9 @@ public class MainFrame extends JPanel {
 		mnSettings.setForeground(new Color(0, 204, 255));
 		menuBar.add(mnSettings);
 		
-		JMenu mnNewMenu_1 = new JMenu("Help");
-		mnNewMenu_1.setForeground(new Color(0, 204, 255));
-		menuBar.add(mnNewMenu_1);
-		
+		JMenu mnHelp = new JMenu("Help");
+		mnHelp.setForeground(new Color(0, 204, 255));
+		menuBar.add(mnHelp);
 	
 	}
 }

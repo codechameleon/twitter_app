@@ -3,6 +3,9 @@ package Mocking;
 import junit.framework.TestCase;
 
 import org.easymock.EasyMock;
+import org.junit.Before;
+import org.junit.Test;
+
 import twitter4j.TwitterException;
 
 
@@ -17,18 +20,17 @@ public class TwitterTest extends TestCase {
 	
 	private TweetUtils tweet;
 
-	//@Before
+	@Before
 	public void setUp(){
 		statusMock = EasyMock.createMock(Status.class);
 		tweet = new TweetUtils();
 		statusMock.setStatus("I am a tweet");
-		statusMock.setId(100);
 		
 	}
 	
-	//@Test
-	public void testStatusUpdate() throws TwitterException {
-		//tweet.deleteTweet(statusMock);
+	@Test
+	public void testStatusUpdate() {
+	
 		EasyMock.expect(statusMock.getId()).andReturn((long) 100);
 		
 	}

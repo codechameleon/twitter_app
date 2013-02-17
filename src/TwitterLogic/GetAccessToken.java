@@ -1,5 +1,7 @@
 package TwitterLogic;
 
+
+
 import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +15,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -21,9 +25,7 @@ import twitter4j.auth.RequestToken;
 /********************************************************************
  * Gets the access token and stores it to a file. Returns the access
  * token
- * @author mike
- *
- */
+ *******************************************************************/
 public class GetAccessToken {
    
     public AccessToken getToken() {
@@ -40,8 +42,10 @@ public class GetAccessToken {
                 prop.load(is);
                 akey = prop.getProperty("oauth.accessToken");
                 aSecret = prop.getProperty("oauth.accessTokenSecret");
-                aToken = new AccessToken(akey,aSecret);
-                return aToken;
+                if (!akey.equals("") && !aSecret.equals("")) {
+                	aToken = new AccessToken(akey,aSecret);
+                	return aToken;
+                }
                 
             }
             
@@ -51,6 +55,7 @@ public class GetAccessToken {
                 prop.store(os, "twitter4j.properties");
             
         } catch (IOException ioe) {
+        	System.out.println("error here");
             ioe.printStackTrace();
             System.exit(-1);
         } finally {
@@ -77,10 +82,9 @@ public class GetAccessToken {
 	            System.out.println("Request token secret: " + requestToken.getTokenSecret());
 	            AccessToken accessToken = null;
 	            
-	            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	         
 	            while (null == accessToken) {
-	                System.out.println("Open the following URL and grant access to your account:");
-	                System.out.println(requestToken.getAuthorizationURL());
+	         
 	                try {
 	                    Desktop.getDesktop().browse(new URI(requestToken.getAuthorizationURL()));
 	                } catch (UnsupportedOperationException ignore) {
@@ -88,8 +92,10 @@ public class GetAccessToken {
 	                } catch (URISyntaxException e) {
 	                    throw new AssertionError(e);
 	                }
-	                System.out.print("Enter the PIN(if available) and hit enter after you granted access.[PIN]:");
-	                String pin = br.readLine();
+	               // System.out.print("Enter the PIN(if available) and hit enter after you granted access.[PIN]:");
+	                
+	                String pin = JOptionPane.showInputDialog(null,"Please enter pin number:");
+	               
 	                try {
 	                    if (pin.length() > 0) {
 	                        accessToken = twitter.getOAuthAccessToken(requestToken, pin);
@@ -132,10 +138,6 @@ public class GetAccessToken {
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
 	            System.out.println("Failed to get accessToken: " + te.getMessage());
-	            System.exit(-1);
-	        } catch (IOException ioe) {
-	            ioe.printStackTrace();
-	            System.out.println("Failed to read the system input.");
 	            System.exit(-1);
 	        }
 	       

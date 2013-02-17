@@ -1,18 +1,16 @@
+package guiDesign;
+
+
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-
 import net.miginfocom.swing.MigLayout;
-
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -27,8 +25,8 @@ public class Followers extends JPanel {
     JLabel followerTitleLabel;
     JScrollPane followerJScrollPane;
 
-    public Followers(Twitter twitter) throws TwitterException {
-    	followers = (twitter.getFollowersList(twitter.getScreenName(), -1));
+    public Followers(List<User> l) throws TwitterException {
+    	followers = l;
         this.setLayout(new GridLayout(1, followers.size()));
 
         followerPanel = new JPanel();
@@ -58,8 +56,8 @@ public class Followers extends JPanel {
             followerPanel.add(thisFollowerPanel);
         }
         followerJScrollPane = new JScrollPane(followerPanel,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, // vertical bar
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         this.add(followerJScrollPane);
     }
 
