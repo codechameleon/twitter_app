@@ -1,5 +1,6 @@
 package TwitterLogic;
 
+
 import java.util.List;
 
 import twitter4j.Status;
@@ -10,14 +11,18 @@ import twitter4j.User;
 /********************************************************************
  * Tweet methods that are used for Twitter. Extends Base class so 
  * it uses the Base created Twitter object with its' configuration
+ * 
+ * @author Michael Torres
+ *
  *******************************************************************/
-public class TweetUtils extends Base{
-	
+public class TweetUtils{
+	Twitter twitter;
+
 	/*********************************************************
 	 * Constructor 
 	 ********************************************************/
-	public TweetUtils(){
-		
+	public TweetUtils(Twitter t){
+		this.twitter =t;
 	};
 
 	/*********************************************************
@@ -90,8 +95,8 @@ public class TweetUtils extends Base{
 			twitter.createFavorite(tweet.getId());
 		} catch (TwitterException e1) {
 			e1.printStackTrace();
-		
 		}
+		
 	}
 	
 	/*********************************************************
@@ -103,8 +108,8 @@ public class TweetUtils extends Base{
 		try {
 			statusList = twitter.getUserTimeline();
 		} catch (TwitterException e) {
-			e.printStackTrace();
 			return null;
+			//e.printStackTrace();
 		}
 		return statusList;
 	}
@@ -118,8 +123,8 @@ public class TweetUtils extends Base{
 		try {
 			statusList = twitter.getHomeTimeline();
 		} catch (TwitterException e) {
-			e.printStackTrace();
 			return null;
+			//e.printStackTrace();
 		}
 		return statusList;
 	}
@@ -133,8 +138,9 @@ public class TweetUtils extends Base{
 		try {
 			statusList = twitter.getMentionsTimeline();
 		} catch (TwitterException e) {
-			e.printStackTrace();
 			return null;
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
 		}
 		return statusList;
 	}
@@ -147,8 +153,9 @@ public class TweetUtils extends Base{
 		try {
 			return twitter.getScreenName();
 		} catch (TwitterException e) {
-			e.printStackTrace();
 			return null;
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
 		}
 	}
 	
@@ -160,8 +167,9 @@ public class TweetUtils extends Base{
 		try {
 			return twitter.getFollowersList(twitter.getScreenName(), -1);
 		} catch (TwitterException e) {
-			e.printStackTrace();
 			return null;
+			// TODO Auto-generated catch block
+			//e.printStackTrace();
 		}
 	}
 	

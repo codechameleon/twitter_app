@@ -23,7 +23,7 @@ public class TwitterTest extends TestCase {
 	@Before
 	public void setUp(){
 		statusMock = EasyMock.createMock(Status.class);
-		tweet = new TweetUtils();
+		//tweet = new TweetUtils();
 		statusMock.setStatus("I am a tweet");
 		
 	}
