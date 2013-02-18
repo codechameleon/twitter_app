@@ -1,4 +1,4 @@
-package TwitterLogic;
+package edu.gvsu.cis.twitter.twitterLogic;
 
 
 import java.util.List;
@@ -10,25 +10,27 @@ import twitter4j.User;
 
 /********************************************************************
  * Tweet methods that are used for Twitter. Extends Base class so 
- * it uses the Base created Twitter object with its' configuration
- * 
- * @author Michael Torres
+ * it uses the Base created Twitter object with its' configuration.
  *
  *******************************************************************/
-public class TweetUtils{
-	Twitter twitter;
+public class TweetUtils {
+	
+	/** Twitter. */
+	private Twitter twitter;
 
 	/*********************************************************
-	 * Constructor 
+	 * Constructor.
+	 * @param t twitter
 	 ********************************************************/
-	public TweetUtils(Twitter t){
-		this.twitter =t;
+	public TweetUtils(final Twitter t) {
+		this.twitter = t;
 	};
 
 	/*********************************************************
-	 * Sends a tweet
+	 * Sends a tweet.
+	 * @param msg string for tweet
 	 ********************************************************/
-	public void sendTweet(String msg){
+	public final void sendTweet(final String msg) {
 
 		try {
 			twitter.updateStatus(msg);
@@ -39,9 +41,11 @@ public class TweetUtils{
 	}
 
 	/*********************************************************
-	 * Delete a tweet
+	 * Delete a tweet.
+	 * @param tweet deleted one
 	 ********************************************************/
-	public void deleteTweet(Status tweet) {
+	public final void deleteTweet(final Status tweet) {
+		
 		try {
 			twitter.destroyStatus(tweet.getId());
 		} catch (TwitterException e) {
@@ -51,9 +55,11 @@ public class TweetUtils{
 	}
 
 	/*********************************************************
-	 * Retweet a Tweet
+	 * Retweet a Tweet.
+	 * @param tweet retweet status
 	 ********************************************************/
-	public void reTweet(Status tweet) {
+	public final void reTweet(final Status tweet) {
+		
 		try {
 			twitter.retweetStatus(tweet.getId());
 		} catch (TwitterException e) {
@@ -63,9 +69,11 @@ public class TweetUtils{
 	}
 
 	/*********************************************************
-	 * Show a Tweet Message
+	 * Show a Tweet Message.
+	 * @param tweet show status
 	 ********************************************************/
-	public void showTweet(Status tweet) {
+	public final void showTweet(final Status tweet) {
+		
 		try {
 			twitter.showStatus(tweet.getId());
 		} catch (TwitterException e) {
@@ -75,9 +83,11 @@ public class TweetUtils{
 	}
 
 	/*********************************************************
-	 * Get reTweets
+	 * Get reTweets.
+	 * @param tweet retweet status
 	 ********************************************************/
-	public void getReTweets(Status tweet) {
+	public final void getReTweets(final Status tweet) {
+		
 		try {
 			List<Status> statuses = twitter.getRetweets(tweet.getId());
 
@@ -88,9 +98,11 @@ public class TweetUtils{
 	}
 	
 	/*********************************************************
-	 * Add to favorite
+	 * Add to favorite.
+	 * @param tweet favorite status
 	 ********************************************************/
-	public void favorite(Status tweet){
+	public final void favorite(final Status tweet) {
+		
 		try {
 			twitter.createFavorite(tweet.getId());
 		} catch (TwitterException e1) {
@@ -100,76 +112,73 @@ public class TweetUtils{
 	}
 	
 	/*********************************************************
-	 * Get The Users own TimeLine
+	 * Get The Users own TimeLine.
 	 * @return list of Statuses
 	 ********************************************************/
-	public List<Status> getUserTimeline(){
+	public final List<Status> getUserTimeline() {
 		List<Status> statusList;
 		try {
 			statusList = twitter.getUserTimeline();
 		} catch (TwitterException e) {
+			e.printStackTrace();
 			return null;
-			//e.printStackTrace();
 		}
 		return statusList;
 	}
 	
 	/*********************************************************
-	 * Get The main TimeLine
+	 * Get The main TimeLine.
 	 * @return list of statuses
 	 ********************************************************/
-	public List<Status> getTimeLine(){
+	public final List<Status> getTimeLine() {
 		List<Status> statusList;
 		try {
 			statusList = twitter.getHomeTimeline();
 		} catch (TwitterException e) {
+			e.printStackTrace();
 			return null;
-			//e.printStackTrace();
 		}
 		return statusList;
 	}
 
 	/*********************************************************
-	 * Get The mentions TimeLine
+	 * Get The mentions TimeLine.
 	 * @return list of statuses
 	 ********************************************************/
-	public List<Status> getMentionsTimeLine(){
+	public final List<Status> getMentionsTimeLine() {
 		List<Status> statusList;
 		try {
 			statusList = twitter.getMentionsTimeline();
 		} catch (TwitterException e) {
+			e.printStackTrace();
 			return null;
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 		return statusList;
 	}
 	
 	/*********************************************************
-	 * Get the Account holders screen name
+	 * Get the Account holders screen name.
 	 * @return ScreenName
 	 ********************************************************/
-	public String getScreenName(){
+	public final String getScreenName() {
 		try {
 			return twitter.getScreenName();
 		} catch (TwitterException e) {
+			e.printStackTrace();
 			return null;
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 	}
 	
 	/*********************************************************
-	 * Get the uesers followers
+	 * Get the uesers followers.
 	 * @return first 20 followers
 	 ********************************************************/
-	public List<User> getFollowers(){
+	public final List<User> getFollowers() {
 		try {
 			return twitter.getFollowersList(twitter.getScreenName(), -1);
 		} catch (TwitterException e) {
+			e.printStackTrace();
 			return null;
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
 		}
 	}
 	
