@@ -9,19 +9,19 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
 
 /*****************************************************************
  * Login Dialog.

@@ -9,16 +9,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.swing.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
-import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.UIManager;
 
 import net.miginfocom.swing.MigLayout;
 import twitter4j.Status;
 import twitter4j.TwitterException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 /********************************************************************
  * A Test GUI for the TweetUtils. 
@@ -48,6 +61,21 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	/** Screen name. */
 	private String screenName;
+	private JMenuBar menuBar;
+	private JMenu mnFile;
+	private JMenuItem mntmExit;
+	private JMenuItem mntmSignOut;
+	private JMenu mnEdit;
+	private JMenuItem mntmTheme;
+	private JMenu mnHelp;
+	private JMenuItem mntmAbout;
+	private JMenu mnProfile;
+	private JMenuItem mntmDirectMessages;
+	private JMenuItem mntmSettings;
+	private JMenu mnSearch;
+	private JMenuItem mntmUser;
+	private JMenuItem mntmHashtag;
+	private JMenuItem mntmTweets;
 
 	/********************************************************************
 	 * TwitterAppGUI constructor, takes a TweetUtils object
@@ -64,15 +92,104 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		this.setSize(400, 700);
 		this.setMaximumSize(new Dimension(400, 700));
 		this.setResizable(false);
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setTitle("Twitter");
 		usersTimeLine = new TimeLine(engine.getUserTimeline());
 		homeTimeLine = new TimeLine(engine.getTimeLine());
 		mentionsTimeLine = new TimeLine(engine.getMentionsTimeLine());
-		setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
+		getContentPane().setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
 		tweetPanel();
 		navigationPanel();
 		timeLinePanel();
 		this.pack();
+		
+		menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		
+		mnFile = new JMenu("File");
+		menuBar.add(mnFile);
+		
+		mntmSignOut = new JMenuItem("Sign Out");
+		
+		mnFile.add(mntmSignOut);
+		
+		mntmExit = new JMenuItem("Exit");
+		mntmExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
+		
+		mnFile.add(mntmExit);
+		
+		mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		mntmTheme = new JMenuItem("Theme");
+		mnEdit.add(mntmTheme);
+		
+		mnProfile = new JMenu("Profile");
+		menuBar.add(mnProfile);
+		
+		mntmDirectMessages = new JMenuItem("Direct Messages");
+		mntmDirectMessages.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				DirectMessaging messages = new DirectMessaging();
+				
+			}
+		});
+		mnProfile.add(mntmDirectMessages);
+		
+		mntmSettings = new JMenuItem("Settings");
+		mntmSettings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TwitterProfile profile = new TwitterProfile();
+			}
+		});
+		mnProfile.add(mntmSettings);
+		
+		mnSearch = new JMenu("Search");
+		menuBar.add(mnSearch);
+		
+		mntmUser = new JMenuItem("User");
+		mntmUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String user = JOptionPane.showInputDialog(null, "Enter user name");
+				engine.searchUser(user);
+			}
+		});
+		mnSearch.add(mntmUser);
+		
+		mntmHashtag = new JMenuItem("Hashtags");
+		mntmHashtag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String hash = JOptionPane.showInputDialog(null, "Enter Hashtag");
+				engine.searchTweet("#" + hash);
+			}
+		});
+		mnSearch.add(mntmHashtag);
+		
+		mntmTweets = new JMenuItem("Tweets");
+		mntmTweets.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String text = JOptionPane.showInputDialog(null, "Enter tweet");
+				engine.searchTweet(text);
+			}
+		});
+		mnSearch.add(mntmTweets);
+		
+		mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		mntmAbout = new JMenuItem("About");
+		mntmAbout.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "Twitter Application version 0.2\n\n Created by:\n " +
+						"Michael Torres\n Ali Aljishi\n Tori Letwinksi");
+			}
+		});
+		mnHelp.add(mntmAbout);
 		setVisible(true);
 
 	}
@@ -83,9 +200,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 ********************************************************/
 	public final void navigationPanel() {
 		JPanel naviPanel = new JPanel();
-		usersTimeLineButton = new JButton("Me!");
+		usersTimeLineButton = new JButton("My Tweets");
 		usersTimeLineButton.addActionListener(this);
-		timeLineButton = new JButton("Tweets");
+		timeLineButton = new JButton("All Tweets");
 		timeLineButton.addActionListener(this);
 		myTimeLineButton = new JButton("@ Me");
 		myTimeLineButton.addActionListener(this);
@@ -95,11 +212,11 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		naviPanel.add(timeLineButton);
 		naviPanel.add(myTimeLineButton);
 		naviPanel.add(followingButton);
-		naviPanel.setBackground(Color.BLACK);
+		naviPanel.setBackground(new Color(51, 153, 153));
 		naviPanel.setSize(450,38);
 		naviPanel.setMinimumSize(naviPanel.getSize());
 		naviPanel.setMaximumSize(naviPanel.getSize());
-		add(naviPanel);
+		getContentPane().add(naviPanel);
 	}
 
 	/*********************************************************
@@ -111,6 +228,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	public final void tweetPanel() throws TwitterException {
 		tweetPanel = new JPanel();
 		tweetText = new JTextArea(3,27);
+		tweetText.setToolTipText("");
 		tweetText.setLineWrap(true);
 		tweetText.setWrapStyleWord(true);
 		JScrollPane scroll = new JScrollPane(tweetText);
@@ -302,7 +420,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			tweetersNameLabel.setFont(tweetersNameFont);
 			tweetersPicLabel = new JLabel(new ImageIcon(img));
 			favoriteButton = new JButton("Favorite");
-			replayButton = new JButton("Replay");
+			replayButton = new JButton("Reply");
 			retweetButton = new JButton("Retweet");
 			deleteButton = new JButton("Delete");
 			tweetDateLabel = new JLabel(date);
@@ -365,11 +483,16 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			if (e.getSource() == deleteButton) {
 				engine.deleteTweet(state);
 			}
-			if (e.getSource() == retweetButton) {
+			else if (e.getSource() == retweetButton) {
 				engine.reTweet(state);
 			}
-			if (e.getSource() == favoriteButton) {
+			else if (e.getSource() == favoriteButton) {
 				engine.favorite(state);
+			}
+			else if (e.getSource() == mntmExit) {
+				System.out.println("exit");
+				System.exit(0);
+				
 			}
 		}
 

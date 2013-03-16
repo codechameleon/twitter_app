@@ -3,15 +3,13 @@ package edu.gvsu.cis.twitter.guiDesign;
 
 import javax.swing.JOptionPane;
 
-import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
-import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
-import edu.gvsu.cis.twitter.twitterLogic.TwitterAccounts;
-
-
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
+import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
+import edu.gvsu.cis.twitter.twitterLogic.TwitterAccounts;
+import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
 
 /********************************************************
  * Main class for testing the Twitter Application
