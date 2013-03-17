@@ -74,7 +74,7 @@ public class LoginDialog extends JDialog
 		requestToken = twitter.getOAuthRequestToken();
 		oAuthLinkTxt.setText("<html><a href=" + "" + ">Get Pin</a></html>.");
     this.accessToken = null;
-    setLayout(new GridLayout(5,1));
+    setLayout(new GridLayout(5, 1));
     getContentPane().add(promtTxt);
     getContentPane().add(oAuthLinkTxt);
     getContentPane().add(pinRequest);
@@ -83,7 +83,7 @@ public class LoginDialog extends JDialog
     
     okButton.addActionListener(this);
     oAuthLinkTxt.addMouseListener(this);
-    setSize(400,300);
+    setSize(400, 300);
 	setVisible(true);
 	}
 	

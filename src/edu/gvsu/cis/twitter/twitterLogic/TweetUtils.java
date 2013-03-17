@@ -2,6 +2,8 @@ package edu.gvsu.cis.twitter.twitterLogic;
 
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import twitter4j.AccountSettings;
@@ -10,8 +12,10 @@ import twitter4j.Location;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.Relationship;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.Trends;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -183,13 +187,18 @@ public class TweetUtils {
 	 ********************************************************/
 	public final List<User> getFollowers() {
 		try {
+			//System.out.println(twitter.getFollowersList
+			//(twitter.getScreenName(), -1));
 			return twitter.getFollowersList(twitter.getScreenName(), -1);
 		} catch (TwitterException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
+	/*********************************************************
+	 * Get users messages.
+	 * @return list of messages
+	 ********************************************************/
 	public final List<DirectMessage> getMessages() {
 		try {
             Paging paging = new Paging(1);
@@ -198,7 +207,9 @@ public class TweetUtils {
             	
                 messages = twitter.getDirectMessages(paging);
                 for (DirectMessage message : messages) {
-                    System.out.println("From: @" + message.getSenderScreenName() + " id:" + message.getId() + " - "
+                    System.out.println("From: @" 
+                    		+ message.getSenderScreenName() + " id:" 
+                    		+ message.getId() + " - "
                             + message.getText());
                 }
                 paging.setPage(paging.getPage() + 1);
@@ -213,7 +224,11 @@ public class TweetUtils {
 	
 	}
 	
-	public final void destroyMessage(long messageID) {
+	/*********************************************************
+	 * Destroys message.
+	 * @param messageID number
+	 ********************************************************/
+	public final void destroyMessage(final long messageID) {
 		try {
   
             twitter.destroyDirectMessage(messageID);
@@ -225,6 +240,10 @@ public class TweetUtils {
         }
 	}
 	
+	/*********************************************************
+	 * Gets messages user has sent.
+	 * @return list of messages
+	 ********************************************************/
 	public final List<DirectMessage> getSentMessages() {
 		List<DirectMessage> directMessages;
 		try {
@@ -232,7 +251,9 @@ public class TweetUtils {
             do {
                 directMessages = twitter.getSentDirectMessages(page);
                 for (DirectMessage message : directMessages) {
-                    System.out.println("To: @" + message.getRecipientScreenName() + " id:" + message.getId() + " - "
+                    System.out.println("To: @" 
+                    		+ message.getRecipientScreenName() 
+                    		+ " id:" + message.getId() + " - "
                             + message.getText());
                 }
                 page.setPage(page.getPage() + 1);
@@ -241,28 +262,41 @@ public class TweetUtils {
             return getMessages();
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to get sent messages: " + te.getMessage());
+            System.out.println("Failed to get sent messages: " 
+            				+ te.getMessage());
             return null;
         }
 	}
 	
-	public final void sendMessage(String to, String text) {
+	/*********************************************************
+	 * Sends a message to a specific user.
+	 * @param to user sending to
+	 * @param text text for message
+	 ********************************************************/
+	public final void sendMessage(final String to, final String text) {
 		
 		try {
             DirectMessage message = twitter.sendDirectMessage(to, text);
-            System.out.println("Direct message successfully sent to " + message.getRecipientScreenName());
+            System.out.println("Direct message successfully sent to " 
+            			+ message.getRecipientScreenName());
            
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to send a direct message: " + te.getMessage());
+            System.out.println("Failed to send a direct message: " 
+            				+ te.getMessage());
            
         }
 	}
 	
-	public final void showMessage(long messageID) {
+	/*********************************************************
+	 * Shows user a message.
+	 * @param messageID number of message
+	 ********************************************************/
+	public final void showMessage(final long messageID) {
 		try {
             DirectMessage message = twitter.showDirectMessage(messageID);
-            System.out.println("From: @" + message.getSenderScreenName() + " id:" + message.getId() + " - "
+            System.out.println("From: @" + message.getSenderScreenName() 
+            		+ " id:" + message.getId() + " - "
                     + message.getText());
             System.exit(0);
         } catch (TwitterException te) {
@@ -272,7 +306,12 @@ public class TweetUtils {
         }
 	}
 	
-	public final List<Status> searchTweet (String text) {
+	/*********************************************************
+	 * Sereches for a specific tweet.
+	 * @return list of tweets
+	 * @param text text searching for
+	 ********************************************************/
+	public final List<Status> searchTweet(final String text) {
 		List<Status> tweets;
 		 try {
 	            Query query = new Query(text);
@@ -281,7 +320,9 @@ public class TweetUtils {
 	                result = twitter.search(query);
 	                tweets = result.getTweets();
 	                for (Status tweet : tweets) {
-	                    System.out.println("@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
+	                    System.out.println("@" 
+	                    		+ tweet.getUser().getScreenName() 
+	                    		+ " - " + tweet.getText());
 	                }
 	               
 	            } while ((query = result.nextQuery()) != null);
@@ -292,7 +333,12 @@ public class TweetUtils {
 	        }
 	}
 	
-	public final ResponseList<User> searchUser(String user) {
+	/*********************************************************
+	 * Search for a specific user.
+	 * @return list of users
+	 * @param user user searching for
+	 ********************************************************/
+	public final ResponseList<User> searchUser(final String user) {
 		 int page = 1;
          ResponseList<User> users;
          try {
@@ -300,7 +346,8 @@ public class TweetUtils {
 	             users = twitter.searchUsers(user, page);
 	             for (User u : users) {
 	                 if (u.getStatus() != null) {
-	                     System.out.println("@" + u.getScreenName() + " - " + u.getStatus().getText());
+	                     System.out.println("@" + u.getScreenName() 
+	                    		 + " - " + u.getStatus().getText());
 	                 } else {
 	                     // the user is protected
 	                     System.out.println("@" + u.getScreenName());
@@ -316,49 +363,280 @@ public class TweetUtils {
      }
 	}
 
-	
-	public final void getProfileSettings() {
+	/*********************************************************
+	 * Gets users profile settings.
+	 * @return user account settings
+	 ********************************************************/
+	public final AccountSettings getProfileSettings() {
 		  try {
 	            
 	            AccountSettings settings = twitter.getAccountSettings();
-	           
-	            System.out.println("Sleep time enabled: " + settings.isSleepTimeEnabled());
-	            System.out.println("Sleep end time: " + settings.getSleepEndTime());
-	            System.out.println("Sleep start time: " + settings.getSleepStartTime());
-	            System.out.println("Geo enabled: " + settings.isGeoEnabled());
-	            System.out.println("Listing trend locations:");
-	            Location[] locations = settings.getTrendLocations();
-	            for (Location location : locations) {
-	                System.out.println(" " + location.getName());
-	            }
+	            return settings;
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
-	            System.out.println("Failed to get account settings: " + te.getMessage());
+	            System.out.println("Failed to get account settings: " 
+	            					+ te.getMessage());
+	            return null;
 	           
 	        }
 	}
 	
-	public final void updateProf(String name, String url, String locat, String description) {
+	/*********************************************************
+	 * Updates users profile.
+	 * @param name user name
+	 * @param url user url
+	 * @param locat user location
+	 * @param description user location 
+	 ********************************************************/
+	public final void updateProf(final String name, final String url, 
+				final String locat, final String description) {
 		 try {
 	           
 	            twitter.updateProfile(name, url, locat, description);
 	            System.out.println("Successfully updated profile.");
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
-	            System.out.println("Failed to update profile: " + te.getMessage());
+	            System.out.println("Failed to update profile: " 
+	            				+ te.getMessage());
 	        }
 	}
 	
-	public final void updatePic (String path) {
+	/*********************************************************
+	 * Updates user profile picture.
+	 * @param path path for user picture
+	 ********************************************************/
+	public final void updatePic(final String path) {
 		 try {
 	            twitter.updateProfileImage(new File(path));
 	            System.out.println("Successfully updated profile image.");
 	            
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
-	            System.out.println("Failed to update profile image: " + te.getMessage());
+	            System.out.println("Failed to update profile image: " 
+	            				+ te.getMessage());
 	            
 	        }
+	}
+	
+	/*********************************************************
+	 * Gets current trends.
+	 * @return String returns trends
+	 ********************************************************/
+	public String [] getTrends() { 
+		Trends trends;
+		try {
+			trends = twitter.getLocationTrends(0);
+	      String[] trendsArr = new String[trends.getTrends().length];
+	      for (int i = 0; i < trends.getTrends().length; i++) {
+	          trendsArr[i] = trends.getTrends()[i].getName();
+	          
+	          // prints trends
+	          System.out.println(trends.getTrends()[i].getName());
+	          return trendsArr;
+	      } 
+		} catch (TwitterException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/*********************************************************
+	 * Gets user name.
+	 * @return user name
+	 * @param ID user ID
+	 ********************************************************/
+	public final String getUserName(final long ID) {
+		
+		try {
+			User user = twitter.showUser(ID);
+			return user.getName();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*********************************************************
+	 * Getus user ID.
+	 * @return user ID
+	 ********************************************************/
+	public final long getMyID() {	
+			
+		try {
+			
+			return twitter.getId();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return 0;
+		}
+		
+	}
+	
+	/*********************************************************
+	 * Gets user screen name.
+	 * @return user screen name.
+	 * @param ID user ID
+	 ********************************************************/
+	public final String getUserScreenName(final long ID) {
+		
+		
+		try {
+			User user = twitter.showUser(ID);
+			return user.getScreenName();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets how many followers the user has.
+	 * @return number of followers
+	 * @param ID user ID
+	 ********************************************************/
+	public final int getFollowersNum(final long ID) {
+		try {
+			User user = twitter.showUser(ID);
+			return user.getFollowersCount();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return 0;
+		}
+		
+	}
+	
+	/*********************************************************
+	 * Gets how many people user is following.
+	 * @return number of followings for user
+	 * @param ID user ID
+	 ********************************************************/
+	public final int getFollowingNum(final long ID) {
+		try {
+			User user = twitter.showUser(ID);
+			
+			return user.getFriendsCount();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return 0;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets users description.
+	 * @return user description
+	 * @param ID user ID
+	 ********************************************************/
+	public final String getUserDescription(final long ID) {
+		try {
+			User user = twitter.showUser(ID);
+			
+			return user.getDescription();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets how many tweets user has favorited.
+	 * @return number of favorited tweets by user
+	 * @param ID user ID
+	 ********************************************************/
+	public final int getFavoritesNum(final long ID) {
+		
+		
+		try {
+			User user = twitter.showUser(ID);
+			return user.getFollowersCount();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return 0;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets users location.
+	 * @return users location
+	 * @param ID user ID
+	 ********************************************************/
+	public final String getUserLocation(final long ID) {
+		
+		
+		try {
+			User user = twitter.showUser(ID);
+			return user.getLocation();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets users picture.
+	 * @return users picture
+	 * @throws MalformedURLException exception
+	 * @param ID user ID
+	 ********************************************************/
+	public final URL getUserPicture(final long ID) throws 
+								MalformedURLException {
+		
+		
+		try {
+			User user = twitter.showUser(ID);
+			String urlString = user.getProfileImageURL();
+			URL url = new URL(urlString);
+			return url;
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return null;
+		}
+	}
+	
+	/*********************************************************
+	 * Gets number of tweets user has done.
+	 * @return number of tweets by user
+	 * @param ID user ID
+	 ********************************************************/
+	public final int getUserTweetNum(final long ID) {
+		
+		
+		try {
+			User user = twitter.showUser(ID);
+			return user.getStatusesCount();
+			
+		} catch (TwitterException te) {
+			te.printStackTrace();
+			return 0;
+		}
+	}
+	
+	/*********************************************************
+	 * Looks if user is being followed by specific user.
+	 * @return ture if followed by user, false if not
+	 * @param one first user 
+	 * @param two second user
+	 ********************************************************/
+	public final boolean isFollowedBy(final String one, final String two) {
+		
+			try {
+				Relationship relation = twitter.showFriendship(one, two);
+				return relation.isSourceFollowedByTarget();
+			} catch (TwitterException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+		
 	}
 
 }
