@@ -2,6 +2,7 @@ package edu.gvsu.cis.twitter.guiDesign;
 
 
 import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -9,10 +10,13 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -23,6 +27,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -35,13 +42,10 @@ import net.miginfocom.swing.MigLayout;
 import twitter4j.AccountSettings;
 import twitter4j.Status;
 import twitter4j.TwitterException;
+import twitter4j.URLEntity;
 import twitter4j.User;
 import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
 import edu.gvsu.cis.twitter.twitterLogic.TwitterAccounts;
-
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 
 /********************************************************************
  * A Test GUI for the TweetUtils. 
@@ -93,6 +97,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	private JMenuItem mntmView;
 	private JPanel naviPanel;
 	private Color newColor;
+	static Preferences prefs;
+	private JMenuItem mntmRefresh;
 
 	/********************************************************************
 	 * TwitterAppGUI constructor, takes a TweetUtils object
@@ -124,6 +130,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		timeLinePanel();
 		this.pack();
 		
+		
+		
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
 		
@@ -136,6 +144,16 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				signOut();
 			}
 		});
+		
+		mntmRefresh = new JMenuItem("Refresh");
+		mntmRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				timeLinePanelRefresh();
+				
+				
+			}
+		});
+		mnFile.add(mntmRefresh);
 		
 		
 		mnFile.add(mntmSignOut);
@@ -162,6 +180,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				
 				if (newColor != null) {
 					naviPanel.setBackground(newColor);
+					prefs.putInt("Red",newColor.getRed());
+					prefs.putInt("Green", newColor.getGreen());
+					prefs.putInt("Blue", newColor.getBlue());
 				}
 			}
 		});
@@ -321,7 +342,15 @@ mntmView = new JMenuItem("View");
 		naviPanel.add(timeLineButton);
 		naviPanel.add(myTimeLineButton);
 		naviPanel.add(followingButton);
-		naviPanel.setBackground(new Color(51, 153, 153));
+		
+		// Define a node in which preferences are stored
+		prefs = Preferences.userRoot().node(this.getClass().getName());
+		int r, g, b = 0;
+		r = prefs.getInt("Red", 51);
+		g = prefs.getInt("Green", 153);
+		b = prefs.getInt("Blue", 153);
+
+		naviPanel.setBackground(new Color(r, g, b));
 		naviPanel.setSize(450, 38);
 		naviPanel.setMinimumSize(naviPanel.getSize());
 		naviPanel.setMaximumSize(naviPanel.getSize());
@@ -343,9 +372,9 @@ mntmView = new JMenuItem("View");
 		JScrollPane scroll = new JScrollPane(tweetText);
 		tweetButton = new JButton("Tweet!");
 		tweetButton.addActionListener(this);
-		tweetPanel.setLayout(new MigLayout("wrap 2"));
-		tweetPanel.add(scroll);
-		tweetPanel.add(tweetButton);
+		tweetPanel.setLayout(new MigLayout("wrap 2", "[][][]", "[]"));
+		tweetPanel.add(scroll, "cell 0 0");
+		tweetPanel.add(tweetButton, "cell 1 0");
 		getContentPane().add(tweetPanel, "dock north");
 	}
 
@@ -421,6 +450,7 @@ mntmView = new JMenuItem("View");
 
 		try {
 			usersTimeLine.updatePanel(engine.getUserTimeline());
+			System.out.println("Rate limit is:");
 		} catch (IllegalStateException e) {
 			e.printStackTrace();
 		} catch (MalformedURLException e) {
@@ -486,7 +516,7 @@ mntmView = new JMenuItem("View");
 		
 		/** Buttons. */
 		private JButton deleteButton, favoriteButton,
-			replayButton, retweetButton;
+			replayButton, retweetButton, linkButton;
 		
 		/** Labels. */
 		private JLabel tweetersNameLabel, tweetersPicLabel, tweetDateLabel;
@@ -519,7 +549,31 @@ mntmView = new JMenuItem("View");
 			SimpleDateFormat formatter = new 
 					SimpleDateFormat("dd-MMM-yy HH:mm");
 			String date = formatter.format(tweetDate);
-
+			
+			String text = s.getText();
+			String link;
+			URI uri;
+			URLEntity[] uent = s.getURLEntities();
+			/*
+			if (uent != null) {
+				
+				for (int k = 0; k < uent.length; k++) {
+					if (text.contains(uent[k].getURL())) {
+						link = text.substring(uent[k].getStart(), uent[k].getEnd());
+						try {
+							uri = new URI(link);
+						} catch (URISyntaxException e) {
+							
+							e.printStackTrace();
+						}
+					}
+                    System.out.println(("Dp Url " + uent[k].getDisplayURL()
+                            + " URL " + uent[k].getURL() + " start "
+                            + uent[k].getStart() + " end "
+                            + uent[k].getEnd()));
+                }
+			}
+			*/
 			URL img = new URL(s.getUser().getProfileImageURL());
 			tweetersNameLabel = new JLabel(s.getUser().getScreenName());
 
@@ -539,6 +593,8 @@ mntmView = new JMenuItem("View");
 			deleteButton.addActionListener(this);
 			favoriteButton.addActionListener(this);
 			retweetButton.addActionListener(this);
+		
+			
 
 			tweetText = new JTextArea(4, 22);
 			tweetText.setEditable(false);
@@ -546,7 +602,7 @@ mntmView = new JMenuItem("View");
 			tweetText.setLineWrap(true);
 			tweetText.setBackground(new Color(255, 255, 255));
 			tweetText.setFont((Font) UIManager.get("Label.font"));
-			tweetText.setText(s.getText());
+			tweetText.setText(text);
 
 			this.setBackground(new Color(255, 255, 255));
 			this.setBorder(BorderFactory.createLineBorder(
@@ -605,6 +661,7 @@ mntmView = new JMenuItem("View");
 		}
 
 	}
+	
 
 	/*********************************************************
 	 * TimeLine class creates the TimeLine Panels and fills
