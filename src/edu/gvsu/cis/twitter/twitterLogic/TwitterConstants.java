@@ -17,4 +17,6 @@ public final class TwitterConstants {
 	public static final String CONSUMER_SECRET =
 			"CwsjmEmNFJl5gSfFVt43OBl9QxGsoFcKWShmSTsjSA";
 	
+	/** Selected Account. */
+	public static int selectedAccount = 0;
 }

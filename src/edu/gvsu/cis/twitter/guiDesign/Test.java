@@ -49,13 +49,15 @@ public final class Test {
 					logState = false;
 				}
 				if (logState) {
+					TwitterConstants.selectedAccount = 0;
 					ut = new TweetUtils(twitter);
 					new TwitterAppGUI(ut);
 				}
 			} else {
-				twitter = accounts.getAccountAt(0);
-				ut = new TweetUtils(twitter);
-				new TwitterAppGUI(ut);
+				Accounts acc = new Accounts();
+				//twitter = accounts.getAccountAt(0);
+				//ut = new TweetUtils(twitter);
+				//new TwitterAppGUI(ut);
 			}
 			
 		} catch (Exception e) {

@@ -5,14 +5,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 import twitter4j.AccountSettings;
 import twitter4j.DirectMessage;
+import twitter4j.Location;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.RateLimitStatus;
 import twitter4j.Relationship;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -308,7 +307,7 @@ public class TweetUtils {
 	}
 	
 	/*********************************************************
-	 * Searches for a specific tweet.
+	 * Sereches for a specific tweet.
 	 * @return list of tweets
 	 * @param text text searching for
 	 ********************************************************/
@@ -317,18 +316,16 @@ public class TweetUtils {
 		 try {
 	            Query query = new Query(text);
 	            QueryResult result;
-	            int count = 0;
 	            do {
 	                result = twitter.search(query);
 	                tweets = result.getTweets();
-	                count++;
 	                for (Status tweet : tweets) {
 	                    System.out.println("@" 
 	                    		+ tweet.getUser().getScreenName() 
 	                    		+ " - " + tweet.getText());
 	                }
 	               
-	            } while ((query = result.nextQuery()) != null && count < 15);
+	            } while ((query = result.nextQuery()) != null);
 	            return tweets;
 	        } catch (TwitterException te) {
 	            te.printStackTrace();
@@ -357,7 +354,7 @@ public class TweetUtils {
 	                 }
 	             }
 	             page++;
-	         } while (users.size() != 0 && page < 25);
+	         } while (users.size() != 0 && page < 50);
 	         return users;
      } catch (TwitterException te) {
          te.printStackTrace();
@@ -640,29 +637,6 @@ public class TweetUtils {
 				return false;
 			}
 		
-	}
-	
-	/**********************************************************
-	 * Shows the rate limits left for everything
-	 ********************************************************/
-	public final void showRateLimitRemaining() {
-		
-		try {
-			Map<String,RateLimitStatus> rateLimitStatus = twitter.getRateLimitStatus();
-			
-			 for (String endpoint : rateLimitStatus.keySet()) {
-	                RateLimitStatus status = rateLimitStatus.get(endpoint);
-	                System.out.println("Endpoint: " + endpoint);
-	                System.out.println(" Limit: " + status.getLimit());
-	                System.out.println(" Remaining: " + status.getRemaining());
-	                System.out.println(" ResetTimeInSeconds: " + status.getResetTimeInSeconds());
-	                System.out.println(" SecondsUntilReset: " + status.getSecondsUntilReset());
-	            }
-	           
-	        } catch (TwitterException te) {
-	            te.printStackTrace();
-	            
-	        }
 	}
 
 }
