@@ -22,13 +22,13 @@ public class TwitterAccounts {
 	/** Arraylist of accounts. */
 	private ArrayList<Twitter> accounts;
 	
-	/** Maps each facebook key to twitter account */
+	/** Maps each facebook key to twitter account. */
 	private Map<Integer, String> fbMap;
 	
-	/** Maps each facebook key to twitter account */
+	/** Maps each facebook key to twitter account. */
 	private Map<Integer, String> nameMap;
 	
-	/** Maps each facebook key to twitter account */
+	/** Maps each facebook key to twitter account. */
 	private Map<Integer, URL> picMap;
 	/****************************************
 	 * Constructor.
@@ -146,7 +146,7 @@ public class TwitterAccounts {
 			FileInputStream fis = new FileInputStream("accounts");
 			ObjectInputStream is = new ObjectInputStream(fis);
 			accounts = (ArrayList<Twitter>) is.readObject();
-			fbMap = (HashMap<Integer,String>) is.readObject();
+			fbMap = (HashMap<Integer, String>) is.readObject();
 			nameMap = (HashMap<Integer, String>) is.readObject();
 			picMap = (HashMap<Integer, URL>) is.readObject();
 			is.close();
@@ -157,56 +157,56 @@ public class TwitterAccounts {
 	}
 	
 	/***********************************************
-	 * Adds the facebook access key to the account 
-	 * @param key
-	 * @param index
+	 * Adds the facebook access key to the account.
+	 * @param key key
+ 	 * @param index indes
 	 **********************************************/
-	public final void addFB(String key, int index) {
-		fbMap.put(index, key );
+	public final void addFB(final String key, final int index) {
+		fbMap.put(index, key);
 	}
 	
 	/***********************************************
-	 * Gets the facebook key from the account
-	 * @param key
-	 * @param index
+	 * Gets the facebook key from the account.
+	 * @param account account
+	 * @return string account
 	 **********************************************/
-	public final String getFB(int account) {
+	public final String getFB(final int account) {
 		return fbMap.get(accounts);
 	}
 	
 	/***********************************************
-	 * Sets the name of the account
-	 * @param key
-	 * @param index
+	 * Sets the name of the account.
+	 * @param name name
+	 * @param index index
 	 **********************************************/
-	public final void setName(String name, int index) {
-		nameMap.put(index, name );
+	public final void setName(final String name, final int index) {
+		nameMap.put(index, name);
 	}
 	
 	/***********************************************
-	 * Sets the picture url of the account
-	 * @param key
-	 * @param index
+	 * Sets the picture url of the account.
+	 * @param account user account
+	 * @param url url
 	 **********************************************/
-	public final void setPicURl(int account, URL url) {
+	public final void setPicURl(final int account, final URL url) {
 		picMap.put(account, url);
 	}
 	
 	/***********************************************
-	 * Gets the name of the account
-	 * @param key
-	 * @param index
+	 * Gets the name of the account.
+	 * @param account user account
+	 * @return user name
 	 **********************************************/
-	public final String getName(int account) {
+	public final String getName(final int account) {
 		return nameMap.get(account);
 	}
 	
 	/***********************************************
-	 * Gets the picture url from the account
-	 * @param key
-	 * @param index
+	 * Gets the picture url from the account.
+	 * @param account user account
+	 * @return URL picture
 	 **********************************************/
-	public final URL getPicURL(int account) {
+	public final URL getPicURL(final int account) {
 		return picMap.get(account);
 	}
 }

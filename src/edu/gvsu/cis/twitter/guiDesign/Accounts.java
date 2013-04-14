@@ -3,12 +3,12 @@ package edu.gvsu.cis.twitter.guiDesign;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+//import java.awt.image.BufferedImage;
+//import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,10 +28,11 @@ import edu.gvsu.cis.twitter.twitterLogic.TweetUtils;
 import edu.gvsu.cis.twitter.twitterLogic.TwitterAccounts;
 import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
 
+/** Accounts. */
 public class Accounts extends JFrame {
 	
+	/** Acounts. */
 	public Accounts() {
-		
 		final TwitterAccounts accounts = new TwitterAccounts();
 		accounts.loadFile();
 		
@@ -50,7 +51,7 @@ public class Accounts extends JFrame {
 		
 		JButton loginAdd = new JButton("Add");
 		loginAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				if (num < 4) {
 					LoginDialog login;
 					Boolean logState = true;
@@ -67,7 +68,8 @@ public class Accounts extends JFrame {
 						twitter.verifyCredentials().getId();
 						accounts.addElement(twitter);
 						accounts.saveFile();
-						//JOptionPane.showMessageDialog(null, "Login Successful!");
+						//JOptionPane.showMessageDialog(null, 
+						//"Login Successful!");
 						TwitterConstants.selectedAccount = num;
 						TweetUtils ut = new TweetUtils(twitter);
 						new TwitterAppGUI(ut);
@@ -82,7 +84,8 @@ public class Accounts extends JFrame {
 					}
 					
 				} else {
-					JOptionPane.showMessageDialog(null, "Maximum Accounts Available is 3");
+					JOptionPane.showMessageDialog(null, 
+									"Maximum Accounts Available is 3");
 				}
 			}
 		});
@@ -98,13 +101,15 @@ public class Accounts extends JFrame {
 		
 		JLabel login_name_1 = new JLabel("");
 		login_name_1.setBorder(null);
-		login_name_1.setBackground(UIManager.getColor("InternalFrame.background"));
+		login_name_1.setBackground(UIManager.getColor(
+							"InternalFrame.background"));
 		login_name_1.setBounds(6, 124, 140, 16);
 		panel_3.add(login_name_1);
 		
 		JLabel login_name_0 = new JLabel("");
 		login_name_0.setBorder(null);
-		login_name_0.setBackground(UIManager.getColor("InternalFrame.background"));
+		login_name_0.setBackground(UIManager.getColor(
+								"InternalFrame.background"));
 		login_name_0.setBounds(193, 124, 135, 16);
 		panel_3.add(login_name_0);
 		
@@ -135,7 +140,7 @@ public class Accounts extends JFrame {
 		final JRadioButton radioButton2 = new JRadioButton("");
 		radioButton2.setBounds(350, 152, 54, 23);
 		panel_3.add(radioButton2);
-		setSize(481,250);
+		setSize(481, 250);
 		
 		final ButtonGroup group = new ButtonGroup();
 		group.add(radioButton1);
@@ -178,7 +183,7 @@ public class Accounts extends JFrame {
 			URL img1;
 			img1 = accounts.getPicURL(1);
 			pic_1.setIcon(new ImageIcon(img1));
-			pic_1.setSize(100,100);
+			pic_1.setSize(100, 100);
 		} else {
 			login_name_2.setVisible(true);
 			login_name_1.setVisible(true);
@@ -196,18 +201,18 @@ public class Accounts extends JFrame {
 			URL img1;
 			img1 = accounts.getPicURL(1);
 			pic_1.setIcon(new ImageIcon(img1));
-			pic_1.setSize(100,100);
+			pic_1.setSize(100, 100);
 			
 			login_name_2.setText(accounts.getName(2));
 			URL img2;
 			img2 = accounts.getPicURL(2);
 			pic_2.setIcon(new ImageIcon(img2));
-			pic_2.setSize(100,100);
+			pic_2.setSize(100, 100);
 		}
 		
 		JButton loginDelete = new JButton("Delete");
 		loginDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 				if (radioButton0.isSelected()) {
 					TwitterConstants.selectedAccount = 0;
 				} else if (radioButton1.isSelected()) {
@@ -218,7 +223,8 @@ public class Accounts extends JFrame {
 				
 				accounts.removeAccount(TwitterConstants.selectedAccount);
 				accounts.saveFile();
-				JOptionPane.showMessageDialog(null, "Account removed from Application!");
+				JOptionPane.showMessageDialog(null, 
+								"Account removed from Application!");
 				accounts.loadFile();
 				if (accounts.getSize() > 0) {
 					
@@ -232,7 +238,7 @@ public class Accounts extends JFrame {
 		
 		JButton loginButton = new JButton("Login");
 		loginButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 				
 				if (radioButton0.isSelected()) {
 					TwitterConstants.selectedAccount = 0;
@@ -242,7 +248,8 @@ public class Accounts extends JFrame {
 					TwitterConstants.selectedAccount = 2;
 				}
 				
-				Twitter twitter = accounts.getAccountAt(TwitterConstants.selectedAccount);
+				Twitter twitter = accounts.getAccountAt(
+						TwitterConstants.selectedAccount);
 				TweetUtils ut = new TweetUtils(twitter);
 				try {
 					new TwitterAppGUI(ut);
@@ -262,7 +269,7 @@ public class Accounts extends JFrame {
 		
 		JButton btnNewButton = new JButton("Exit");
 		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				System.exit(0);
 			}
 		});

@@ -69,43 +69,98 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	/** Pannels. */
 	private JPanel tweetPanel, timeLinePanel;
-
+	
 	/** Booolean for login. */
 	private boolean login = false;
-
+	
 	/** TimeLines. */
 	private TimeLine usersTimeLine, homeTimeLine, mentionsTimeLine;
-
+	
+	/** Followers Panel. */
 	private Followers followersPanel;
-
-	/** Screen name. */
+	
+	/** Last time line. */
 	private String lastTimeLine = "";
+	
+	/** Screen name. */
 	private String screenName;
+	
+	/** Menu bar. */
 	private JMenuBar menuBar;
+	
+	/** File. */
 	private JMenu mnFile;
+	
+	/** Exit. */
 	private JMenuItem mntmExit;
+	
+	/** Sign out. */
 	private JMenuItem mntmSignOut;
+	
+	/** Edit. */
 	private JMenu mnEdit;
+	
+	/** Theme. */
 	private JMenuItem mntmTheme;
+	
+	/** Help. */
 	private JMenu mnHelp;
+	
+	/** About. */
 	private JMenuItem mntmAbout;
+	
+	/** Profile. */
 	private JMenu mnProfile;
+	
+	/** Direct messages. */
 	private JMenuItem mntmDirectMessages;
+	
+	/** Settings. */
 	private JMenuItem mntmSettings;
+	
+	/** Search. */
 	private JMenu mnSearch;
+	
+	/** User. */
 	private JMenuItem mntmUser;
+	
+	/** Hash tag. */
 	private JMenuItem mntmHashtag;
+	
+	/** Tweets. */
 	private JMenuItem mntmTweets;
+	
+	/** Followers panel. */
 	private JPanel mainFollowersPanel;
+	
+	/** Navigation panel. */
 	private JPanel naviPanel;
+	
+	/** New color. */
 	private Color newColor;
-	static Preferences prefs;
+	
+	/** Preferences. */
+	private Preferences prefs;
+	
+	/** Trends. */
 	private TrendsPanel trendsView;
+	
+	/** Facebook. */
 	private JMenuItem mntmFacebook;
+	
+	/** Notifications. */
 	private JMenuItem mntmNotifications;
+	
+	/** Refresh. */
 	private JMenuItem mntmRefresh;
+	
+	/** Tweet. */
 	private JMenuItem mntmTweet;
+	
+	/** Tweet timer. */
 	private TweetTimer tweetTimer = new TweetTimer();
+	
+	/** Listener for timer. */
 	private TimerListener refreshRate;
 
 	/********************************************************************
@@ -129,16 +184,18 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		homeTimeLine = new TimeLine(engine.getTimeLine());
 		mentionsTimeLine = new TimeLine(engine.getMentionsTimeLine());
 		mainFollowersPanel = new JPanel();
-		mainFollowersPanel.setSize(220,440);
+		mainFollowersPanel.setSize(220, 440);
 		mainFollowersPanel.setPreferredSize(mainFollowersPanel.getSize());
-		mainFollowersPanel.setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
+		mainFollowersPanel.setLayout(new MigLayout(
+				"wrap 1", "0 [] 0", "0 [] 0"));
 		followersPanel = new Followers(engine.getFollowers());
 		trendsView = new TrendsPanel(engine.getTrends());
 
 		final TwitterAccounts accounts = new TwitterAccounts();
 		accounts.loadFile();
 		accounts.setName(tu.getScreenName(), TwitterConstants.selectedAccount);
-		accounts.setPicURl(TwitterConstants.selectedAccount, tu.getUserPicture(tu.getMyID()));
+		accounts.setPicURl(TwitterConstants.selectedAccount, 
+						tu.getUserPicture(tu.getMyID()));
 		accounts.saveFile();
 
 		getContentPane().setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
@@ -159,7 +216,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmSignOut = new JMenuItem("Sign Out");
 		mntmSignOut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				signOut();
 			}
 		});
@@ -169,7 +226,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				System.exit(0);
 			}
 		});
@@ -188,7 +245,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 				if (newColor != null) {
 					naviPanel.setBackground(newColor);
-					prefs.putInt("Red",newColor.getRed());
+					prefs.putInt("Red", newColor.getRed());
 					prefs.putInt("Green", newColor.getGreen());
 					prefs.putInt("Blue", newColor.getBlue());
 				}
@@ -202,12 +259,13 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmRefresh = new JMenuItem("Refresh Time");
 		mntmRefresh.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 				
 				try {
 					String input = "";
-					input = JOptionPane.showInputDialog(null, "Please Enter a Refresh" +
-							" Interval greater than 29 seconds");
+					input = JOptionPane.showInputDialog(null, 
+							"Please Enter a Refresh" 
+					+ " Interval greater than 29 seconds");
 					
 					if (input != null || input.equals("")) {
 						try {
@@ -215,10 +273,12 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 							//new RefreshRate();
 							refreshRate.setRefreshTime(num);
 						} catch (NumberFormatException e) {
-							JOptionPane.showMessageDialog(null, "Please enter a number");
+							JOptionPane.showMessageDialog(null, 
+									"Please enter a number");
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Please enter a value");
+						JOptionPane.showMessageDialog(null, 
+								"Please enter a value");
 					}
 				} catch (NullPointerException e) {
 					
@@ -232,7 +292,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmDirectMessages = new JMenuItem("Direct Messages");
 		mntmDirectMessages.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				new DirectMsgDialog(engine.getFollowers());
 			}
 		});
@@ -240,13 +300,14 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmSettings = new JMenuItem("Profile Info");
 		mntmSettings.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				long id = tu.getMyID();
 				try {
-					ShowProfile profile = new ShowProfile(tu.getUserName(id), tu.getUserPicture(id),
-							tu.getScreenName(), tu.getFollowersNum(id), tu.getFollowingNum(id),
-							tu.getFavoritesNum(id), tu.getUserTweetNum(id), tu.getUserDescription(id),
-							tu.getUserLocation(id));
+					ShowProfile profile = new ShowProfile(tu.getUserName(id), 
+							tu.getUserPicture(id), tu.getScreenName(), 
+							tu.getFollowersNum(id), tu.getFollowingNum(id),
+							tu.getFavoritesNum(id), tu.getUserTweetNum(id), 
+							tu.getUserDescription(id), tu.getUserLocation(id));
 				} catch (MalformedURLException e1) {
 					e1.printStackTrace();
 				}
@@ -255,33 +316,38 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmFacebook = new JMenuItem("Facebook Your Tweet");
 		mntmFacebook.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(final ActionEvent arg0) {
 
 				Facebook fb = new Facebook();
 				Desktop desktop = Desktop.getDesktop();
 
 
-				String access = accounts.getFB(TwitterConstants.selectedAccount);
+				String access = accounts.getFB(
+						TwitterConstants.selectedAccount);
 
 				// Token not saved and must run access prompt once 
 				if (access == "" || access == null) {
 
 					try {
 						desktop.browse(new URI(fb.FBURL));
-						String url = JOptionPane.showInputDialog(null, "Please paste URL here. " +
-								"We do not share your" +
-								" information with third parties." );
+						String url = JOptionPane.showInputDialog(null, "Please "
+								+ "paste URL here. We do not share your"
+								+ " information with third parties.");
 
 						if (url != null && !url.equals("")) {
 							String tok = fb.getAccessToken(url);
 							
-							accounts.addFB(tok, TwitterConstants.selectedAccount);
+							accounts.addFB(tok, TwitterConstants.
+											selectedAccount);
 							accounts.saveFile();
-							if (tweetText.getText() != null && !tweetText.getText().equals("")) {
+							if (tweetText.getText() != null 
+									&& !tweetText.getText().equals("")) {
 								fb.sendToFacebook(tweetText.getText(), tok);
-								JOptionPane.showMessageDialog(null,"Tweet Posted to Facebook!");
+								JOptionPane.showMessageDialog(null,
+											"Tweet Posted to Facebook!");
 							} else {
-								JOptionPane.showMessageDialog(null, "Please Enter a Tweet First");
+								JOptionPane.showMessageDialog(null, 
+											"Please Enter a Tweet First");
 							}
 
 						}
@@ -294,15 +360,18 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 					}
 
 				} else {
-					if (tweetText.getText() != null && !tweetText.getText().equals("")) {
+					if (tweetText.getText() != null 
+							&& !tweetText.getText().equals("")) {
 						try {
 							fb.sendToFacebook(tweetText.getText(), access);
-							JOptionPane.showMessageDialog(null,"Tweet Posted to Facebook!");
+							JOptionPane.showMessageDialog(null, 
+									"Tweet Posted to Facebook!");
 						} catch (UnsupportedEncodingException e) {
 							e.printStackTrace();
 						}
 					} else {
-						JOptionPane.showMessageDialog(null, "Please Enter a Tweet First");
+						JOptionPane.showMessageDialog(null, 
+								"Please Enter a Tweet First");
 					}
 				}
 			}
@@ -312,17 +381,20 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmTweet = new JMenuItem("Tweet From All Accounts");
 		mntmTweet.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 
-				if (tweetText.getText() != null && !tweetText.getText().equals("")) {
+				if (tweetText.getText() != null 
+						&& !tweetText.getText().equals("")) {
 					int number = accounts.getSize();
 
 					for (int i = 0; i < number; i++) {
-						TweetUtils tempE = new TweetUtils(accounts.getAccountAt(i));
+						TweetUtils tempE = new TweetUtils(
+								accounts.getAccountAt(i));
 						tempE.sendTweet(tweetText.getText());
 					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Please Enter a Tweet First");
+					JOptionPane.showMessageDialog(null, 
+							"Please Enter a Tweet First");
 				}
 			}
 		});
@@ -334,8 +406,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmUser = new JMenuItem("User");
 		mntmUser.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String user = JOptionPane.showInputDialog(null, "Enter user name");
+			public void actionPerformed(final ActionEvent e) {
+				String user = JOptionPane.showInputDialog(null, 
+								"Enter user name");
 				//engine.searchUser(user);
 				try {
 					new UserSearchR(engine.searchUser(user));
@@ -350,8 +423,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		JMenuItem mntmUserwF = new JMenuItem("Follow Who?");
 		mntmUserwF.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String user = JOptionPane.showInputDialog(null, "Enter user name");
+			public void actionPerformed(final ActionEvent e) {
+				String user = JOptionPane.showInputDialog(null, 
+									"Enter user name");
 				
 				if (user != null && !user.equals("")) {
 					//engine.searchUser(user);
@@ -368,11 +442,12 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmHashtag = new JMenuItem("Hashtags");
 		mntmHashtag.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String hash = JOptionPane.showInputDialog(null, "Enter Hashtag");
+			public void actionPerformed(final ActionEvent e) {
+				String hash = JOptionPane.showInputDialog(null, 
+											"Enter Hashtag");
 				//engine.searchTweet("#" + hash);
 				try {
-					new TweetSearchR(engine.searchTweet("#"+hash));
+					new TweetSearchR(engine.searchTweet("#" + hash));
 				} catch (IllegalStateException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -389,7 +464,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmTweets = new JMenuItem("Tweets");
 		mntmTweets.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				String text = JOptionPane.showInputDialog(null, "Enter tweet");
 				//engine.searchTweet(text);
 				try {
@@ -413,9 +488,10 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		mntmAbout = new JMenuItem("About");
 		mntmAbout.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Twitter Application version 3.0\n\n Created by:\n " +
-						"Michael Torres\n Ali Aljishi\n Tori Letwinksi");
+			public void actionPerformed(final ActionEvent e) {
+				JOptionPane.showMessageDialog(null, 
+						"Twitter Application version 3.0\n\n Created by:\n "
+						+ "Michael Torres\n Ali Aljishi\n Tori Letwinksi");
 			}
 		});
 		mnHelp.add(mntmAbout);
@@ -453,7 +529,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		b = prefs.getInt("Blue", 153);
 
 		naviPanel.setBackground(new Color(r, g, b));
-		naviPanel.setSize(450,38);
+		naviPanel.setSize(450, 38);
 		naviPanel.setMinimumSize(naviPanel.getSize());
 		naviPanel.setMaximumSize(naviPanel.getSize());
 		getContentPane().add(naviPanel);
@@ -467,7 +543,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 ********************************************************/
 	public final void tweetPanel() throws TwitterException {
 		tweetPanel = new JPanel();
-		tweetText = new JTextArea(3,27);
+		tweetText = new JTextArea(3, 27);
 		tweetText.setToolTipText("");
 		tweetText.setLineWrap(true);
 		tweetText.setWrapStyleWord(true);
@@ -486,7 +562,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 ********************************************************/
 	public final void timeLinePanel() {
 		timeLinePanel = new JPanel();
-		timeLinePanel.setSize(450,440);
+		timeLinePanel.setSize(450, 440);
 		timeLinePanel.setPreferredSize(timeLinePanel.getSize());
 		try {
 			usersTimeLine.updatePanel(engine.getUserTimeline());
@@ -731,14 +807,11 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 			if (e.getSource() == deleteButton) {
 				engine.deleteTweet(state);
-			}
-			else if (e.getSource() == retweetButton) {
+			} else if (e.getSource() == retweetButton) {
 				engine.reTweet(state);
-			}
-			else if (e.getSource() == favoriteButton) {
+			} else if (e.getSource() == favoriteButton) {
 				engine.favorite(state);
-			}
-			else if (e.getSource() == mntmExit) {
+			} else if (e.getSource() == mntmExit) {
 				System.out.println("exit");
 				System.exit(0);
 
@@ -820,44 +893,53 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	/*********************************************************
 	 * Followers class creates the Followers Panels and fills
-	 * it with the people a user is following
+	 * it with the people a user is following.
 	 ********************************************************/
 	public class Followers extends JPanel {
-		/** JPanel to hold the followrs panel */
+		/** JPanel to hold the followrs panel. */
 		private JPanel jPanel1;
 
-		/** List of Users */
+		/** List of Users. */
 		private List<User> followers;
 
-		/** the avatar URL */
+		/** the avatar URL. */
 		private URL imageUrl;
 
-		/** Followers Panel width */
+		/** Followers Panel width. */
 		private int panelWidth = 250;
 
-		/** Sending Button */
+		/** Sending Button. */
 		private JLabel followerName;
 
-		/** Label holding the avatar */
+		/** Label holding the avatar. */
 		private JLabel followerImg;
 
-		/** Panel holding the list */
+		/** Panel holding the list. */
 		private JPanel followerPanel;
 
-		/** Followers Name Label */
+		/** Followers Name Label. */
 		private JLabel followerTitleLabel;
 
-		/** Scroll Panel in case needed */
+		/** Scroll Panel in case needed. */
 		private JScrollPane followerJScrollPane;
 
-
-		public Followers(List<User> l) throws TwitterException {
+		/******************************************************
+		 * Followers.
+		 * @param l list
+		 * @throws TwitterException exception
+		 */
+		public Followers(final List<User> l) throws TwitterException {
 			this.setSize(250, 400);
 			this.setPreferredSize(this.getSize());
 			followers = l;
 			updateFollowers(followers);
 		}
-		public void updateFollowers(List<User> users){
+		
+		/*******************************************************
+		 * Update Followers.
+		 * @param users users
+		 */
+		public final void updateFollowers(final List<User> users) { 
 			this.removeAll();
 			this.setSize(250, 400);
 			this.setPreferredSize(this.getSize());
@@ -897,12 +979,13 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * returns a TimeLine panel.
 		 * @return FollowersPanel
 		 ********************************************************/
-		public JPanel getFollowersPanel(){
+		public final JPanel getFollowersPanel() {
 			return this;
 		}
 
 	}
 
+	/** Followers Panel. */
 	public final void followersPanel() {
 		mainFollowersPanel.removeAll();
 		try {
@@ -917,11 +1000,16 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	}
 
 	/*********************************************************
-	 * Creates a Panel to display the current Trends
+	 * Creates a Panel to display the current Trends.
 	 ********************************************************/
 	public class TrendsPanel extends JPanel {
-		public TrendsPanel(String [] t) throws TwitterException 
-		{ 
+		
+		/*****************************************************
+		 * Trends Panel.
+		 * @param t t
+		 * @throws TwitterException exception
+		 */
+		public TrendsPanel(final String [] t) throws TwitterException { 
 			setLayout(new MigLayout("wrap 1"));
 			JLabel trendsLabel = new JLabel("Trends");
 			JList trendsList = new JList(t);
@@ -931,18 +1019,18 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			this.add(trendsList); 
 		} 
 		/*********************************************************
-		 * returns the Trends Panel
+		 * Returns the Trends Panel.
 		 * @return JPanel
 		 ********************************************************/
-		public JPanel getTrendsPanel(){
+		public final JPanel getTrendsPanel() {
 			return this;
 		}
 	}
 
 	/*********************************************************
-	 * SignOut and account and exits
+	 * SignOut and account and exits.
 	 ********************************************************/
-	public void signOut(){
+	public final void signOut() {
 		Accounts login = new Accounts();
 		this.dispose();
 		//Multiple Accounts process
@@ -951,21 +1039,25 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	/**************************************************
 	 * Direct Message dialog prompt.
 	 *************************************************/
-	public class DirectMsgDialog extends JDialog implements ActionListener{
+	public class DirectMsgDialog extends JDialog implements ActionListener {
 
-		/** Sending Button */
+		/** Sending Button. */
 		private JButton okButton;
-		/** Cancel Button */
+		
+		/** Cancel Button. */
 		private JButton cancelButton;
-		/** List of users to send a message to*/
+		
+		/** List of users to send a message to. */
 		private JComboBox followersComboBox;
-		/** TextField where the message is written */
+		
+		/** TextField where the message is written. */
 		private JTextField messageTextField;
+		
 		/**************************************************
 		 * Direct Message dialog prompt.
-		 * @param List<Users>
+		 * @param u list of users
 		 *************************************************/
-		public DirectMsgDialog(List<User> u) {
+		public DirectMsgDialog(final List<User> u) {
 			setModalityType(DEFAULT_MODALITY_TYPE);
 			this.setTitle("Direct Message");
 			setLayout(new FlowLayout());
@@ -1001,16 +1093,18 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @param e the ActionEvent
 		 *****************************************************/
 		@Override
-		public final void actionPerformed(ActionEvent e) {
-			if(e.getSource()==okButton){
-				engine.sendMessage(followersComboBox.getSelectedItem().toString(), 
+		public final void actionPerformed(final ActionEvent e) {
+			if (e.getSource() == okButton) {
+				engine.sendMessage(followersComboBox.
+						getSelectedItem().toString(), 
 						messageTextField.getText());
-				JOptionPane.showMessageDialog(this, "Message Sent Successfully");
+				JOptionPane.showMessageDialog(this, 
+						"Message Sent Successfully");
 				messageTextField.setText("");
 				this.dispose();
-			}
-			else if (e.getSource() == cancelButton)
+			} else if (e.getSource() == cancelButton) {
 				this.dispose();
+			}
 		}
 
 	}
@@ -1020,15 +1114,15 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	/**************************************************
 	 * Direct Message dialog prompt.
 	 *************************************************/
-	public class ProfileEditor extends JDialog implements ActionListener{
+	public class ProfileEditor extends JDialog implements ActionListener {
 
-		/** ok Button */
+		/** ok Button. */
 		private JButton okButton;
 
-		/** Cancel Button */
+		/** Cancel Button. */
 		private JButton cancelButton;
 
-		/** TextField where the message is written */
+		/** TextField where the message is written. */
 		private JTextField messageTextField;
 		/**************************************************
 		 * Direct Message dialog prompt.
@@ -1061,21 +1155,20 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @param e the ActionEvent
 		 *****************************************************/
 		@Override
-		public final void actionPerformed(ActionEvent e) {
-			if(e.getSource()==okButton){
-
+		public final void actionPerformed(final ActionEvent e) {
+			if (e.getSource() == okButton) {
+				this.dispose();
+			} else if (e.getSource() == cancelButton) {
 				this.dispose();
 			}
-			else if (e.getSource() == cancelButton)
-				this.dispose();
 		}
 
 	}
 
 	/**************************************************
-	 * Search Results window
+	 * Search Results window.
 	 *************************************************/
-	public class TweetSearchR extends JDialog{
+	public class TweetSearchR extends JDialog {
 
 		/** Panel. */
 		private JPanel jPanel1;
@@ -1094,6 +1187,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @param l status list 
 		 * @throws TwitterException error 
 		 * @throws MalformedURLException error 
+		 * @throws IllegalStateException error
 		 ********************************************************/
 		public TweetSearchR(final List<Status> l) throws
 		IllegalStateException, TwitterException, MalformedURLException {
@@ -1122,43 +1216,56 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	}
 
-	public class UserSearchR extends JDialog implements ActionListener{
+	/** User Search. */
+	public class UserSearchR extends JDialog implements ActionListener {
 
-		/** JPanel to hold the followrs panel */
+		/** JPanel to hold the followrs panel. */
 		private JPanel jPanel1;
 
-		/** List of Users */
+		/** List of Users. */
 		private List<User> followers;
 
-		/** the avatar URL */
+		/** the avatar URL. */
 		private URL imageUrl;
 
-		/** Followers Panel width */
+		/** Followers Panel width. */
 		private int panelWidth = 250;
 
-		/** Sending Button */
+		/** Sending Button. */
 		private JLabel followerName;
 
-		/** Label holding the avatar */
+		/** Label holding the avatar. */
 		private JLabel followerImg;
 
-		/** Panel holding the list */
+		/** Panel holding the list. */
 		private JPanel followerPanel;
 
-		/** Followers Name Label */
+		/** Followers Name Label. */
 		private JLabel followerTitleLabel;
 
-		/** Scroll Panel in case needed */
+		/** Scroll Panel in case needed. */
 		private JScrollPane followerJScrollPane;
 
+		/** Follow Back. */
 		private JButton followB;
-		public UserSearchR(List<User> l) throws TwitterException {
+		
+		/*********************************************************
+		 * User Search.
+		 * @param l list
+		 * @throws TwitterException exception
+		 ********************************************************/
+		public UserSearchR(final List<User> l) throws TwitterException {
 			this.setSize(290, 400);
 			this.setPreferredSize(this.getSize());
 			followers = l;
 			updateFollowers(followers);
 		}
-		public void updateFollowers(List<User> users){
+		
+		/********************************************************
+		 * Update Followers.
+		 * @param users users
+		 *******************************************************/
+		public final void updateFollowers(final List<User> users) {
 			this.setSize(290, 400);
 			this.setPreferredSize(this.getSize());
 			this.followers = users;
@@ -1183,7 +1290,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				followerImg.setSize(50, 50);
 				followerImg.setPreferredSize(new Dimension(50, 50));
 				followerImg.setMaximumSize(new Dimension(50, 50));
-				JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2", "0 [] 0", "0 [] 0"));
+				JPanel thisFollowerPanel = new JPanel(new MigLayout(
+									"wrap 2", "0 [] 0", "0 [] 0"));
 				thisFollowerPanel.add(followerImg);
 				thisFollowerPanel.add(followerName);
 				followB = new JButton("Follow");
@@ -1199,23 +1307,34 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			this.pack();
 		}
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public final void actionPerformed(final ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource() == followB){
+			if (e.getSource() == followB) {
 				engine.setFollower(followerName.getText());
 			}
 
 		}
 	}
 
+	/** Profile. */
+	public class ProFileEd extends JDialog implements ActionListener {
 
-	public class ProFileEd extends JDialog implements ActionListener{
-
+		/** Content panel. */
 		private final JPanel contentPanel = new JPanel();
+		
+		/** Text field 1. */
 		private JTextField textField;
+		
+		/** Text field 2. */
 		private JTextField textField_1;
+		
+		/** Text field 3. */
 		private JTextField textField_2;
+		
+		/** Ok button. */
 		private JButton okButton;
+		
+		/** Cancel button. */
 		private JButton cancelButton;
 
 
@@ -1227,182 +1346,212 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			getContentPane().setLayout(new BorderLayout());
 			contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 			getContentPane().add(contentPanel, BorderLayout.CENTER);
-			contentPanel.setLayout(new MigLayout("", "[][][][grow]", "[][][][][][grow]"));
-			{
-				JLabel lblNewLabel_4 = new JLabel("Photo");
-				contentPanel.add(lblNewLabel_4, "cell 1 0 2 2");
-			}
-			{
-				JCheckBox chckbxNewCheckBox = new JCheckBox("Remove Photo");
-				contentPanel.add(chckbxNewCheckBox, "flowx,cell 3 1");
-			}
-			{
-				JLabel lblNewLabel = new JLabel("Name");
-				contentPanel.add(lblNewLabel, "cell 1 2");
-			}
-			{
-				textField = new JTextField();
-				contentPanel.add(textField, "cell 3 2,growx");
-				textField.setColumns(10);
-			}
-			{
-				JLabel lblNewLabel_1 = new JLabel("Location");
-				contentPanel.add(lblNewLabel_1, "cell 1 3");
-			}
-			{
-				textField_1 = new JTextField();
-				contentPanel.add(textField_1, "cell 3 3,growx");
-				textField_1.setColumns(10);
-			}
-			{
-				JLabel lblNewLabel_2 = new JLabel("Website");
-				contentPanel.add(lblNewLabel_2, "cell 1 4");
-			}
-			{
-				textField_2 = new JTextField();
-				contentPanel.add(textField_2, "cell 3 4,growx");
-				textField_2.setColumns(10);
-			}
-			{
-				JLabel lblNewLabel_3 = new JLabel("Bio");
-				contentPanel.add(lblNewLabel_3, "cell 1 5");
-			}
-			{
-				JButton btnNewButton = new JButton("Upload a photo");
-				contentPanel.add(btnNewButton, "cell 3 1");
-			}
-			{
-				JTextPane textPane = new JTextPane();
-				contentPanel.add(textPane, "cell 3 5,grow");
-			}
-			{
-				JPanel buttonPane = new JPanel();
-				buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-				getContentPane().add(buttonPane, BorderLayout.SOUTH);
-				{
-					okButton = new JButton("OK");
-					okButton.addActionListener(this);
-					buttonPane.add(okButton);
-					getRootPane().setDefaultButton(okButton);
-				}
-				{
-					cancelButton = new JButton("Cancel");
-					cancelButton.addActionListener(this);
-					buttonPane.add(cancelButton);
-				}
-			}
+			contentPanel.setLayout(new MigLayout("", 
+								"[][][][grow]", "[][][][][][grow]"));
+			JLabel lblNewLabel_4 = new JLabel("Photo");
+			contentPanel.add(lblNewLabel_4, "cell 1 0 2 2");
+			
+			JCheckBox chckbxNewCheckBox = new JCheckBox("Remove Photo");
+			contentPanel.add(chckbxNewCheckBox, "flowx,cell 3 1");
+			
+			JLabel lblNewLabel = new JLabel("Name");
+			contentPanel.add(lblNewLabel, "cell 1 2");
+			
+			textField = new JTextField();
+			contentPanel.add(textField, "cell 3 2,growx");
+			textField.setColumns(10);
+			
+			JLabel lblNewLabel_1 = new JLabel("Location");
+			contentPanel.add(lblNewLabel_1, "cell 1 3");
+			
+			textField_1 = new JTextField();
+			contentPanel.add(textField_1, "cell 3 3,growx");
+			textField_1.setColumns(10);
+			
+			JLabel lblNewLabel_2 = new JLabel("Website");
+			contentPanel.add(lblNewLabel_2, "cell 1 4");
+			
+			textField_2 = new JTextField();
+			contentPanel.add(textField_2, "cell 3 4,growx");
+			textField_2.setColumns(10);
+			
+			JLabel lblNewLabel_3 = new JLabel("Bio");
+			contentPanel.add(lblNewLabel_3, "cell 1 5");
+			
+			JButton btnNewButton = new JButton("Upload a photo");
+			contentPanel.add(btnNewButton, "cell 3 1");
+			
+			JTextPane textPane = new JTextPane();
+			contentPanel.add(textPane, "cell 3 5,grow");
+			
+			JPanel buttonPane = new JPanel();
+			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			
+			okButton = new JButton("OK");
+			okButton.addActionListener(this);
+			buttonPane.add(okButton);
+			getRootPane().setDefaultButton(okButton);
+			
+			cancelButton = new JButton("Cancel");
+			cancelButton.addActionListener(this);
+			buttonPane.add(cancelButton);
 		}
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public final void actionPerformed(final ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource() == okButton){
+			if (e.getSource() == okButton) {
 				//engine.updateProf(name, url, locat, textPane)
 			}
-
-			if (e.getSource()== cancelButton)
+			if (e.getSource() == cancelButton) {
 				this.dispose();
+			}
 		}
 
 	}
 
-	public class TimerListener implements ActionListener{
+	/****************************************************
+	 * Time listener.
+	 ****************************************************/
+	public class TimerListener implements ActionListener {
 
+		/** Timer. */
 		private Timer timer = new Timer(30000, this);
+		/** Listener. */
 		public TimerListener() {
 		}
-		public void start(){
+		
+		/** Start. */
+		public final void start() {
 			timer.start();
 		}
 
-		public void setRefreshTime(int delay){
-			timer.setDelay(delay*1000);
+		/************************************************
+		 * Refresh time.
+		 * @param delay delay time
+		 ************************************************/
+		public final void setRefreshTime(final int delay) {
+			timer.setDelay(delay * 1000);
 			timer.stop();
 			timer.start();
 		}
 
-		public int getRefreshTime(){
-			return timer.getDelay()/1000;
+		/*************************************************
+		 * Get refresh time.
+		 * @return time
+		 ************************************************/
+		public final int getRefreshTime() {
+			return timer.getDelay() / 1000;
 		}
-		public void actionPerformed(ActionEvent e) {
+		
+		/*************************************************
+		 * Action event for refresh time.
+		 * @param e action event
+		 ************************************************/
+		public final void actionPerformed(final ActionEvent e) {
 			// your code goes here
-			if(lastTimeLine.equals("userTimeLine")){
+			if (lastTimeLine.equals("userTimeLine")) {
 				timeLinePanelRefresh();
-			}
-			else if (lastTimeLine.equals("mentionsTimeLine")){
+			} else if (lastTimeLine.equals("mentionsTimeLine")) {
 				mentionsTimeLine();
-			}
-			else if(lastTimeLine.equals("homeTimeLine")){
+			} else if (lastTimeLine.equals("homeTimeLine")) {
 				mainTimeLine();
 			}
 		}
 	}
 
-	public class TweetTimer implements ActionListener{
+	/** Tweet timer. */
+	public class TweetTimer implements ActionListener {
 
+		/** Timer. */
 		private Timer timer = new Timer(2000, this);
+		
+		/** Tweet timer. */
 		public TweetTimer() {
 		}
-		public void start(){
+		
+		/** Start timer. */
+		public final void start() {
 			timer.start();
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		/*************************************************
+		 * Timer action.
+		 * @param e action event
+		 ************************************************/
+		public final void actionPerformed(final ActionEvent e) {
 			// your code goes here
-			if(lastTimeLine.equals("userTimeLine")){
-				timeLinePanelRefresh();
-			}
-			else if (lastTimeLine.equals("mentionsTimeLine")){
+			if (lastTimeLine.equals("userTimeLine")) {
+				timeLinePanelRefresh(); 
+			} else if (lastTimeLine.equals("mentionsTimeLine")) {
 				mentionsTimeLine();
-			}
-			else if(lastTimeLine.equals("homeTimeLine")){
+			} else if (lastTimeLine.equals("homeTimeLine")) {
 				mainTimeLine();
 			}
 			timer.stop();
 		}
 	}
 
-	public class FollowersTimer implements ActionListener{
-
+	/** Followers timer. */
+	public class FollowersTimer implements ActionListener {
+		/** Timer. */
 		private Timer timer = new Timer(1500, this);
+		
+		/** Start timer. */
 		public FollowersTimer() {
 			timer.start();
 		}
-
-		public void actionPerformed(ActionEvent e) {
+		/*************************************************
+		 * Stop timer.
+		 * @param e action event
+		 ************************************************/
+		public final void actionPerformed(final ActionEvent e) {
 			timer.stop();
 		}
 	}
 
-	public class whoToFollow extends JDialog implements ActionListener{
-		/** List of Users */
+	/** Suggested users to follow. */
+	public class whoToFollow extends JDialog implements ActionListener {
+		
+		/** List of Users. */
 		private List<User> followers;
 
-		/** the avatar URL */
+		/** the avatar URL. */
 		private URL imageUrl;
 
-		/** Sending Button */
+		/** Sending Button. */
 		private JLabel followerName;
 
-		/** Label holding the avatar */
+		/** Label holding the avatar. */
 		private JLabel followerImg;
 
-		/** Panel holding the list */
+		/** Panel holding the list. */
 		private JPanel followerPanel;
 
-		/** Scroll Panel in case needed */
+		/** Scroll Panel in case needed. */
 		private JScrollPane followerJScrollPane;
 
-		/** Follow Button */
+		/** Follow Button. */
 		private JButton followB;
 
-		public whoToFollow(List<User> l) throws TwitterException {
+		/************************************************
+		 * Who to follow.
+		 * @param l list of users
+		 * @throws TwitterException exception
+		 ************************************************/
+		public whoToFollow(final List<User> l) throws TwitterException {
 			this.setSize(290, 400);
 			this.setPreferredSize(this.getSize());
-			followers =l;
+			followers = l;
 			updateFollowers(followers);
 		}
-		public void updateFollowers(List<User> users){
+		
+		/*************************************************
+		 * Update followers.
+		 * @param users users
+		 ************************************************/
+		public final void updateFollowers(final List<User> users) {
 			this.setSize(290, 400);
 			this.setPreferredSize(this.getSize());
 			this.followers = users;
@@ -1427,7 +1576,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				followerImg.setSize(50, 50);
 				followerImg.setPreferredSize(new Dimension(50, 50));
 				followerImg.setMaximumSize(new Dimension(50, 50));
-				JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2", "0 [] 0", "0 [] 0"));
+				JPanel thisFollowerPanel = new JPanel(
+								new MigLayout("wrap 2", "0 [] 0", "0 [] 0"));
 				thisFollowerPanel.add(followerImg);
 				thisFollowerPanel.add(followerName);
 				followB = new JButton("Follow");
@@ -1443,9 +1593,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			this.pack();
 		}
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public final void actionPerformed(final ActionEvent e) {
 			// TODO Auto-generated method stub
-			if(e.getSource() == followB){
+			if (e.getSource() == followB) {
 				engine.setFollower(followerName.getText());
 			}
 

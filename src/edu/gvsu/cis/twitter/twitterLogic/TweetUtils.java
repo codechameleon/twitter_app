@@ -8,7 +8,7 @@ import java.util.List;
 
 import twitter4j.AccountSettings;
 import twitter4j.DirectMessage;
-import twitter4j.Location;
+//import twitter4j.Location;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -422,7 +422,7 @@ public class TweetUtils {
 	 * Gets current trends.
 	 * @return String returns trends
 	 ********************************************************/
-	public String [] getTrends() { 
+	public final String [] getTrends() { 
 		Trends trends;
 		try {
 			trends = twitter.getPlaceTrends(23424977);
@@ -640,10 +640,10 @@ public class TweetUtils {
 	}
 	
 	/*********************************************************
-	 * Follow a users
-	 * @param user name
+	 * Follow a users.
+	 * @param name user name
 	 ********************************************************/
-	public void setFollower(String name) {
+	public final void setFollower(final String name) {
 		try {
 			twitter.createFriendship(name);
 		} catch (TwitterException e) {
@@ -652,10 +652,10 @@ public class TweetUtils {
 	}
 	
 	/*********************************************************
-	 * unFollow a users
-	 * @param user name
+	 * unFollow a users.
+	 * @param name user name
 	 ********************************************************/
-	public void unFollower(String name) {
+	public final void unFollower(final String name) {
 		try {
 			twitter.destroyFriendship(name);
 		} catch (TwitterException e) {

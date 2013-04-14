@@ -1,12 +1,12 @@
 package edu.gvsu.cis.twitter.guiDesign;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
+//import java.awt.Graphics;
+//import java.awt.image.BufferedImage;
+//import java.io.IOException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
