@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.prefs.Preferences;
-
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -40,9 +39,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-
 import net.miginfocom.swing.MigLayout;
 import twitter4j.Status;
 import twitter4j.TwitterException;
@@ -57,29 +56,30 @@ import edu.gvsu.cis.twitter.twitterLogic.TwitterConstants;
  *******************************************************************/
 @SuppressWarnings("serial")
 public class TwitterAppGUI extends JFrame implements ActionListener {
-	
+
 	/** TweetUtils engine. */
 	private TweetUtils engine;
-	
+
 	/** JTextArea for tweet text.*/
 	private JTextArea tweetText;
-	
+
 	/** Buttons. */
 	private JButton tweetButton, refreshButton, timeLineButton,
-		usersTimeLineButton, myTimeLineButton;
-	
+	usersTimeLineButton, myTimeLineButton;
+
 	/** Pannels. */
 	private JPanel tweetPanel, timeLinePanel;
-	
+
 	/** Booolean for login. */
 	private boolean login = false;
-	
+
 	/** TimeLines. */
 	private TimeLine usersTimeLine, homeTimeLine, mentionsTimeLine;
 
 	private Followers followersPanel;
-	
+
 	/** Screen name. */
+	private String lastTimeLine = "";
 	private String screenName;
 	private JMenuBar menuBar;
 	private JMenu mnFile;
@@ -105,6 +105,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	private JMenuItem mntmNotifications;
 	private JMenuItem mntmRefresh;
 	private JMenuItem mntmTweet;
+	private TweetTimer tweetTimer = new TweetTimer();
+	private TimerListener refreshRate;
 
 	/********************************************************************
 	 * TwitterAppGUI constructor, takes a TweetUtils object
@@ -114,7 +116,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 * @throws TwitterException twitter error
 	 *******************************************************************/
 	public TwitterAppGUI(final TweetUtils tu) throws TwitterException, 
-		 MalformedURLException {
+	MalformedURLException {
 		this.engine = tu;
 		this.screenName = tu.getScreenName();
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -129,60 +131,61 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		mainFollowersPanel = new JPanel();
 		mainFollowersPanel.setSize(220,440);
 		mainFollowersPanel.setPreferredSize(mainFollowersPanel.getSize());
+		mainFollowersPanel.setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
 		followersPanel = new Followers(engine.getFollowers());
-//		trendsView = new TrendsPanel(engine.getTrends());
-		
+		trendsView = new TrendsPanel(engine.getTrends());
+
 		final TwitterAccounts accounts = new TwitterAccounts();
 		accounts.loadFile();
 		accounts.setName(tu.getScreenName(), TwitterConstants.selectedAccount);
 		accounts.setPicURl(TwitterConstants.selectedAccount, tu.getUserPicture(tu.getMyID()));
 		accounts.saveFile();
-		
+
 		getContentPane().setLayout(new MigLayout("wrap 1", "0 [] 0", "0 [] 0"));
 		// Start Adding Panels!
 		getContentPane().add(mainFollowersPanel, "dock east");
 		tweetPanel();
 		navigationPanel();
 		timeLinePanel();
-		
+
 		followersPanel();
 		this.pack();
-		
+
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
-		
+
 		mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		
+
 		mntmSignOut = new JMenuItem("Sign Out");
 		mntmSignOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				signOut();
 			}
 		});
-		
-		
+
+
 		mnFile.add(mntmSignOut);
-		
+
 		mntmExit = new JMenuItem("Exit");
 		mntmExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		
-		
+
+
 		mnFile.add(mntmExit);
-		
+
 		mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
-		
+
 		mntmTheme = new JMenuItem("Theme");
 		mntmTheme.addActionListener(new ActionListener() {
 			public void actionPerformed(final ActionEvent arg0) {
 				newColor = JColorChooser.showDialog(null, 
 						"Choose theme color", getBackground());
-				
+
 				if (newColor != null) {
 					naviPanel.setBackground(newColor);
 					prefs.putInt("Red",newColor.getRed());
@@ -193,16 +196,40 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		});
 
 		mnEdit.add(mntmTheme);
-		
+
 		mntmNotifications = new JMenuItem("Notifications");
 		mnEdit.add(mntmNotifications);
-		
+
 		mntmRefresh = new JMenuItem("Refresh Time");
+		mntmRefresh.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				try {
+					String input = "";
+					input = JOptionPane.showInputDialog(null, "Please Enter a Refresh" +
+							" Interval greater than 29 seconds");
+					
+					if (input != null || input.equals("")) {
+						try {
+							int num = Integer.parseInt(input);
+							//new RefreshRate();
+							refreshRate.setRefreshTime(num);
+						} catch (NumberFormatException e) {
+							JOptionPane.showMessageDialog(null, "Please enter a number");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Please enter a value");
+					}
+				} catch (NullPointerException e) {
+					
+				}
+			}
+		});
 		mnEdit.add(mntmRefresh);
-		
+
 		mnProfile = new JMenu("Profile");
 		menuBar.add(mnProfile);
-		
+
 		mntmDirectMessages = new JMenuItem("Direct Messages");
 		mntmDirectMessages.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -210,7 +237,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			}
 		});
 		mnProfile.add(mntmDirectMessages);
-		
+
 		mntmSettings = new JMenuItem("Profile Info");
 		mntmSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -225,31 +252,29 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 				}
 			}
 		});
-		
+
 		mntmFacebook = new JMenuItem("Facebook Your Tweet");
 		mntmFacebook.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
+
 				Facebook fb = new Facebook();
 				Desktop desktop = Desktop.getDesktop();
-				
-				// Save access token 
-				//String access = prefs.get("Facebook", "");
-				
+
+
 				String access = accounts.getFB(TwitterConstants.selectedAccount);
-				
+
 				// Token not saved and must run access prompt once 
 				if (access == "" || access == null) {
-				
+
 					try {
 						desktop.browse(new URI(fb.FBURL));
 						String url = JOptionPane.showInputDialog(null, "Please paste URL here. " +
 								"We do not share your" +
 								" information with third parties." );
-						
+
 						if (url != null && !url.equals("")) {
 							String tok = fb.getAccessToken(url);
-							//prefs.put("Facebook", tok);
+							
 							accounts.addFB(tok, TwitterConstants.selectedAccount);
 							accounts.saveFile();
 							if (tweetText.getText() != null && !tweetText.getText().equals("")) {
@@ -258,13 +283,13 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 							} else {
 								JOptionPane.showMessageDialog(null, "Please Enter a Tweet First");
 							}
-								
-							}
+
+						}
 					} catch (IOException e) {
-						
+
 						e.printStackTrace();
 					} catch (URISyntaxException e) {
-						
+
 						e.printStackTrace();
 					}
 
@@ -281,17 +306,17 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 					}
 				}
 			}
-			
+
 		});
 		mnProfile.add(mntmFacebook);
-		
+
 		mntmTweet = new JMenuItem("Tweet From All Accounts");
 		mntmTweet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+
 				if (tweetText.getText() != null && !tweetText.getText().equals("")) {
 					int number = accounts.getSize();
-				
+
 					for (int i = 0; i < number; i++) {
 						TweetUtils tempE = new TweetUtils(accounts.getAccountAt(i));
 						tempE.sendTweet(tweetText.getText());
@@ -303,10 +328,10 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		});
 		mnProfile.add(mntmTweet);
 		mnProfile.add(mntmSettings);
-		
+
 		mnSearch = new JMenu("Search");
 		menuBar.add(mnSearch);
-		
+
 		mntmUser = new JMenuItem("User");
 		mntmUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -321,7 +346,26 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			}
 		});
 		mnSearch.add(mntmUser);
-		
+
+
+		JMenuItem mntmUserwF = new JMenuItem("Follow Who?");
+		mntmUserwF.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String user = JOptionPane.showInputDialog(null, "Enter user name");
+				
+				if (user != null && !user.equals("")) {
+					//engine.searchUser(user);
+					try {
+						new whoToFollow(engine.searchUser(user));
+					} catch (TwitterException e1) {
+					
+					}
+				}
+			}
+		});
+		mnSearch.add(mntmUserwF);
+
+
 		mntmHashtag = new JMenuItem("Hashtags");
 		mntmHashtag.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -342,7 +386,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			}
 		});
 		mnSearch.add(mntmHashtag);
-		
+
 		mntmTweets = new JMenuItem("Tweets");
 		mntmTweets.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -363,24 +407,25 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			}
 		});
 		mnSearch.add(mntmTweets);
-		
+
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
-		
+
 		mntmAbout = new JMenuItem("About");
 		mntmAbout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Twitter Application version 0.2\n\n Created by:\n " +
+				JOptionPane.showMessageDialog(null, "Twitter Application version 3.0\n\n Created by:\n " +
 						"Michael Torres\n Ali Aljishi\n Tori Letwinksi");
 			}
 		});
 		mnHelp.add(mntmAbout);
-		
-		
+
+		//Refresh rate of the time panels
+		refreshRate = new TimerListener();
 		setVisible(true);
 
 	}
-	
+
 	/*********************************************************
 	 * Creates a panel with button that displays the TimeLines
 	 * panels.
@@ -454,10 +499,11 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		}
 		timeLinePanel.add(usersTimeLine.getTimeLinePanel());
 		getContentPane().add(timeLinePanel, "grow");
+		lastTimeLine = "userTimeLine";
 		validate();
 
 	}
-	
+
 	/*********************************************************
 	 * creates a panel with the main TimeLine that view all 
 	 * the users tweets and tweets from whom they are following
@@ -476,6 +522,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		}
 		timeLinePanel.add(homeTimeLine.getTimeLinePanel());
 		timeLinePanel.revalidate();
+		lastTimeLine = "homeTimeLine";
 	}
 
 	/*********************************************************
@@ -496,6 +543,9 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		}
 		timeLinePanel.add(mentionsTimeLine.getTimeLinePanel());
 		timeLinePanel.revalidate();
+		timeLinePanel.validate();
+		timeLinePanel.repaint();
+		lastTimeLine = "mentionsTimeLine";
 	}
 
 	/*********************************************************
@@ -516,6 +566,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		}
 		timeLinePanel.add(usersTimeLine.getTimeLinePanel());
 		timeLinePanel.revalidate();
+		lastTimeLine = "userTimeLine";
 
 	}
 
@@ -527,11 +578,12 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 ********************************************************/
 	@Override
 	public final void actionPerformed(final ActionEvent e) {
-		
+
 		// Find source of button pressed
 		if (e.getSource() == tweetButton) {
 			engine.sendTweet(tweetText.getText());
 			tweetText.setText("");
+			tweetTimer.start();
 		}
 
 		if (e.getSource() == refreshButton || e.getSource() 
@@ -569,17 +621,17 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 * done with them.
 	 ********************************************************/
 	public class TweetPanel extends JPanel implements ActionListener {
-		
+
 		/** Buttons. */
 		private JButton deleteButton, favoriteButton,
-			replayButton, retweetButton;
-		
+		replayButton, retweetButton;
+
 		/** Labels. */
 		private JLabel tweetersNameLabel, tweetersPicLabel, tweetDateLabel;
-		
+
 		/** text area. */
 		private JTextArea tweetText;
-		
+
 		/** Status. */
 		private Status state;
 		/**
@@ -588,7 +640,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @throws IllegalStateException 
 		 * @throws MalformedURLException 
 		 */
-		
+
 		/*********************************************************
 		 * TweetPanel Constructor that takes a Status object to 
 		 * represent a tweet.
@@ -598,7 +650,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @throws MalformedURLException error
 		 ********************************************************/
 		public TweetPanel(final Status s) throws IllegalStateException,
-			TwitterException, MalformedURLException {
+		TwitterException, MalformedURLException {
 			this.state = s;
 			s.getId();
 			Date tweetDate = s.getCreatedAt();
@@ -613,7 +665,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 					tweetersNameLabel.getFont().getName(),
 					Font.ITALIC + Font.BOLD,
 					tweetersNameLabel.getFont().getSize());  
-			
+
 			tweetersNameLabel.setFont(tweetersNameFont);
 			tweetersPicLabel = new JLabel(new ImageIcon(img));
 			favoriteButton = new JButton("Favorite");
@@ -650,7 +702,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			this.add(tweetersNameLabel);
 			this.add(favoriteButton);
 			this.add(replayButton);
-			
+
 			//Check if a tweet belongs to the user or not
 			// if it did belong to the user it shows the delete button
 			// if not it shows the replay button
@@ -668,7 +720,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			setVisible(true);
 
 		}
-		
+
 		/*********************************************************
 		 * actionPerformed class for the tweetPanel, controlling
 		 * what each Button in the tweetPanel do.
@@ -676,7 +728,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 ********************************************************/
 		@Override
 		public final void actionPerformed(final ActionEvent e) {
-			
+
 			if (e.getSource() == deleteButton) {
 				engine.deleteTweet(state);
 			}
@@ -689,7 +741,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			else if (e.getSource() == mntmExit) {
 				System.out.println("exit");
 				System.exit(0);
-				
+
 			}
 		}
 
@@ -700,13 +752,13 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	 * them with tweetPanels.
 	 ********************************************************/
 	private class TimeLine extends JPanel {
-		
+
 		/** Panel. */
 		private JPanel jPanel1;
-		
+
 		/** List. */
 		private List<Status> statusList;
-		
+
 		/**
 		 * Create the panel.
 		 * @throws TwitterException 
@@ -720,7 +772,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @throws MalformedURLException error 
 		 ********************************************************/
 		public TimeLine(final List<Status> l) throws
-			TwitterException, MalformedURLException {
+		TwitterException, MalformedURLException {
 			jPanel1 = new JPanel();
 			jPanel1.setBackground(new Color(255, 255, 255));
 			jPanel1.setBorder(BorderFactory.createLineBorder(
@@ -728,7 +780,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			this.statusList = l;
 
 		}
-		
+
 		/*********************************************************
 		 * Updates TimeLine panel with a new List.
 		 * @param l statuses
@@ -737,7 +789,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		 * @throws IllegalStateException 
 		 ********************************************************/
 		public void updatePanel(final List<Status> l) throws 
-			IllegalStateException, MalformedURLException, TwitterException {
+		IllegalStateException, MalformedURLException, TwitterException {
 			this.removeAll();
 			this.statusList = l;
 			TweetPanel[] a = new TweetPanel[statusList.size()];
@@ -765,7 +817,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		}
 
 	}
-	
+
 	/*********************************************************
 	 * Followers class creates the Followers Panels and fills
 	 * it with the people a user is following
@@ -773,83 +825,84 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 	public class Followers extends JPanel {
 		/** JPanel to hold the followrs panel */
 		private JPanel jPanel1;
-		
-		/** List of Users */
-	    private List<User> followers;
-	    
-		/** the avatar URL */
-	    private URL imageUrl;
-	    
-		/** Followers Panel width */
-	    private int panelWidth = 250;
-	    
-		/** Sending Button */
-	    private JLabel followerName;
-	    
-		/** Label holding the avatar */
-	    private JLabel followerImg;
-	    
-		/** Panel holding the list */
-	    private JPanel followerPanel;
-	    
-		/** Followers Name Label */
-	    private JLabel followerTitleLabel;
-	    
-		/** Scroll Panel in case needed */
-	    private JScrollPane followerJScrollPane;
-	    
-	    public Followers(List<User> l) throws TwitterException {
-	    	this.setSize(250, 400);
-	    	this.setPreferredSize(this.getSize());
-	    	followers = l;
-	    	updateFollowers(followers);
-	    }
-	    public void updateFollowers(List<User> users){
-	    	this.removeAll();
-	    	this.setSize(250, 400);
-	    	this.setPreferredSize(this.getSize());
-	    	this.followers = users;
-	        followerPanel = new JPanel();
-	        followerPanel.setLayout(new MigLayout("wrap 1"));
-	        this.setLayout(new MigLayout("wrap 1"));
 
-	        
-	        JLabel followersT = new JLabel("Followers!");
-	        this.add(followersT);
-	        for (User u : followers) {
-	            try {
+		/** List of Users */
+		private List<User> followers;
+
+		/** the avatar URL */
+		private URL imageUrl;
+
+		/** Followers Panel width */
+		private int panelWidth = 250;
+
+		/** Sending Button */
+		private JLabel followerName;
+
+		/** Label holding the avatar */
+		private JLabel followerImg;
+
+		/** Panel holding the list */
+		private JPanel followerPanel;
+
+		/** Followers Name Label */
+		private JLabel followerTitleLabel;
+
+		/** Scroll Panel in case needed */
+		private JScrollPane followerJScrollPane;
+
+
+		public Followers(List<User> l) throws TwitterException {
+			this.setSize(250, 400);
+			this.setPreferredSize(this.getSize());
+			followers = l;
+			updateFollowers(followers);
+		}
+		public void updateFollowers(List<User> users){
+			this.removeAll();
+			this.setSize(250, 400);
+			this.setPreferredSize(this.getSize());
+			this.followers = users;
+			followerPanel = new JPanel();
+			followerPanel.setLayout(new MigLayout("wrap 1"));
+			this.setLayout(new MigLayout("wrap 1"));
+
+
+			JLabel followersT = new JLabel("Followers!");
+			this.add(followersT);
+			for (User u : followers) {
+				try {
 					imageUrl = new URL(u.getProfileImageURL());
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
 
-	            followerName = new JLabel(u.getName());
+				followerName = new JLabel(u.getName());
 
-	            followerImg = new JLabel(new ImageIcon(imageUrl));
-	            followerImg.setSize(50, 50);
-	            followerImg.setPreferredSize(new Dimension(50, 50));
-	            followerImg.setMaximumSize(new Dimension(50, 50));
-	            JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2"));
-	            thisFollowerPanel.add(followerImg);
-	            thisFollowerPanel.add(followerName);
-	            followerPanel.add(thisFollowerPanel);
-	        }
-	        followerJScrollPane = new JScrollPane(followerPanel,
-	                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-	                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	        this.add(followerJScrollPane);
-	    }
-	    /*********************************************************
+				followerImg = new JLabel(new ImageIcon(imageUrl));
+				followerImg.setSize(50, 50);
+				followerImg.setPreferredSize(new Dimension(50, 50));
+				followerImg.setMaximumSize(new Dimension(50, 50));	            
+				JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2"));
+				thisFollowerPanel.add(followerImg);
+				thisFollowerPanel.add(followerName);
+				followerPanel.add(thisFollowerPanel);
+			}
+			followerJScrollPane = new JScrollPane(followerPanel,
+					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			this.add(followerJScrollPane);
+		}
+		/*********************************************************
 		 * returns a TimeLine panel.
 		 * @return FollowersPanel
 		 ********************************************************/
-	    public JPanel getFollowersPanel(){
-	    	return this;
-	    }
+		public JPanel getFollowersPanel(){
+			return this;
+		}
 
 	}
-	
+
 	public final void followersPanel() {
 		mainFollowersPanel.removeAll();
 		try {
@@ -858,33 +911,34 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 		mainFollowersPanel.add(followersPanel.getFollowersPanel());
-//		mainFollowersPanel.add(trendsView.getTrendsPanel());
+		mainFollowersPanel.add(trendsView.getTrendsPanel());
 		validate();
 		mainFollowersPanel.revalidate();
 	}
-	
+
 	/*********************************************************
 	 * Creates a Panel to display the current Trends
 	 ********************************************************/
 	public class TrendsPanel extends JPanel {
-		   public TrendsPanel(String [] t) throws TwitterException 
-		   { 
-		      super(new FlowLayout());
-		      JLabel trendsLabel = new JLabel("Trends");
-		      JList trendsList = new JList(t);
-		      trendsList.setSize(new Dimension(200, 200));
-		      this.add(trendsLabel);
-		      this.add(trendsList); 
-		   } 
-		   /*********************************************************
-			 * returns the Trends Panel
-			 * @return JPanel
-			 ********************************************************/
-		   public JPanel getTrendsPanel(){
-			   return this;
-		   }
+		public TrendsPanel(String [] t) throws TwitterException 
+		{ 
+			setLayout(new MigLayout("wrap 1"));
+			JLabel trendsLabel = new JLabel("Trends");
+			JList trendsList = new JList(t);
+			trendsList.setSize(new Dimension(190, 400));
+			trendsList.setFixedCellWidth(190);
+			this.add(trendsLabel);
+			this.add(trendsList); 
+		} 
+		/*********************************************************
+		 * returns the Trends Panel
+		 * @return JPanel
+		 ********************************************************/
+		public JPanel getTrendsPanel(){
+			return this;
 		}
-	
+	}
+
 	/*********************************************************
 	 * SignOut and account and exits
 	 ********************************************************/
@@ -893,7 +947,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		this.dispose();
 		//Multiple Accounts process
 	}
-	
+
 	/**************************************************
 	 * Direct Message dialog prompt.
 	 *************************************************/
@@ -915,31 +969,31 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			setModalityType(DEFAULT_MODALITY_TYPE);
 			this.setTitle("Direct Message");
 			setLayout(new FlowLayout());
-	        setSize(new Dimension(620, 100));
-	        setPreferredSize(new Dimension(480, 100));
-	        setLocationRelativeTo(null);
-	        
-	        messageTextField = new JTextField();
-	        messageTextField.setSize(new Dimension(460, 20));
-	        messageTextField.setPreferredSize(new Dimension(460, 20));
-	        okButton = new JButton("Send");
-	        okButton.addActionListener(this);
-	        cancelButton = new JButton("Cancel");
-	        
-	        followersComboBox = new JComboBox();
-	            String[] followerArr = new String[u.size()];
-	            for (int i = 0; i < u.size(); i++) {
-	                followerArr[i] = u.get(i).getScreenName();
-	            }
-	            followersComboBox = new JComboBox(followerArr);
+			setSize(new Dimension(620, 100));
+			setPreferredSize(new Dimension(480, 100));
+			setLocationRelativeTo(null);
 
-	        add(messageTextField);
-	        add(followersComboBox);
-	        add(okButton);
-	        add(cancelButton);
-	        cancelButton.addActionListener(this);
-	        setVisible(true);
-	         
+			messageTextField = new JTextField();
+			messageTextField.setSize(new Dimension(460, 20));
+			messageTextField.setPreferredSize(new Dimension(460, 20));
+			okButton = new JButton("Send");
+			okButton.addActionListener(this);
+			cancelButton = new JButton("Cancel");
+
+			followersComboBox = new JComboBox();
+			String[] followerArr = new String[u.size()];
+			for (int i = 0; i < u.size(); i++) {
+				followerArr[i] = u.get(i).getScreenName();
+			}
+			followersComboBox = new JComboBox(followerArr);
+
+			add(messageTextField);
+			add(followersComboBox);
+			add(okButton);
+			add(cancelButton);
+			cancelButton.addActionListener(this);
+			setVisible(true);
+
 		}
 
 		/******************************************************
@@ -949,11 +1003,11 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		@Override
 		public final void actionPerformed(ActionEvent e) {
 			if(e.getSource()==okButton){
-	             engine.sendMessage(followersComboBox.getSelectedItem().toString(), 
-	                  messageTextField.getText());
-	             JOptionPane.showMessageDialog(this, "Message Sent Successfully");
-	             messageTextField.setText("");
-	             this.dispose();
+				engine.sendMessage(followersComboBox.getSelectedItem().toString(), 
+						messageTextField.getText());
+				JOptionPane.showMessageDialog(this, "Message Sent Successfully");
+				messageTextField.setText("");
+				this.dispose();
 			}
 			else if (e.getSource() == cancelButton)
 				this.dispose();
@@ -961,8 +1015,8 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 	}
 
-	
-	
+
+
 	/**************************************************
 	 * Direct Message dialog prompt.
 	 *************************************************/
@@ -970,7 +1024,7 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		/** ok Button */
 		private JButton okButton;
-		
+
 		/** Cancel Button */
 		private JButton cancelButton;
 
@@ -984,22 +1038,22 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			setModalityType(DEFAULT_MODALITY_TYPE);
 			this.setTitle("Profile");
 			setLayout(new FlowLayout());
-	        setSize(new Dimension(400, 400));
-	        setPreferredSize(new Dimension(400, 100));
-	        setLocationRelativeTo(null);
-	        setLayout(new MigLayout("wrap 2"));
-	        
-	        
-	        okButton = new JButton("Send");
-	        okButton.addActionListener(this);
-	        cancelButton = new JButton("Cancel");
+			setSize(new Dimension(400, 400));
+			setPreferredSize(new Dimension(400, 100));
+			setLocationRelativeTo(null);
+			setLayout(new MigLayout("wrap 2"));
 
-	        add(messageTextField);
-	        add(okButton);
-	        add(cancelButton);
-	        cancelButton.addActionListener(this);
-	        setVisible(true);
-	         
+
+			okButton = new JButton("Send");
+			okButton.addActionListener(this);
+			cancelButton = new JButton("Cancel");
+
+			add(messageTextField);
+			add(okButton);
+			add(cancelButton);
+			cancelButton.addActionListener(this);
+			setVisible(true);
+
 		}
 
 		/******************************************************
@@ -1009,15 +1063,15 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 		@Override
 		public final void actionPerformed(ActionEvent e) {
 			if(e.getSource()==okButton){
-	             
-	             this.dispose();
+
+				this.dispose();
 			}
 			else if (e.getSource() == cancelButton)
 				this.dispose();
 		}
 
 	}
-	
+
 	/**************************************************
 	 * Search Results window
 	 *************************************************/
@@ -1025,10 +1079,10 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 
 		/** Panel. */
 		private JPanel jPanel1;
-		
+
 		/** List. */
 		private List<Status> statusList;
-		
+
 		/**
 		 * Create the panel.
 		 * @throws TwitterException 
@@ -1063,86 +1117,98 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			scrollPane.setMaximumSize(new Dimension(427, 420));
 			getContentPane().setLayout(new MigLayout("wrap 1", "0 [] 0", ""));
 			getContentPane().add(scrollPane, "dock north");
-			 setVisible(true);
+			setVisible(true);
 		}
 
 	}
-	
-	public class UserSearchR extends JDialog{
+
+	public class UserSearchR extends JDialog implements ActionListener{
 
 		/** JPanel to hold the followrs panel */
 		private JPanel jPanel1;
-		
-		/** List of Users */
-	    private List<User> followers;
-	    
-		/** the avatar URL */
-	    private URL imageUrl;
-	    
-		/** Followers Panel width */
-	    private int panelWidth = 250;
-	    
-		/** Sending Button */
-	    private JLabel followerName;
-	    
-		/** Label holding the avatar */
-	    private JLabel followerImg;
-	    
-		/** Panel holding the list */
-	    private JPanel followerPanel;
-	    
-		/** Followers Name Label */
-	    private JLabel followerTitleLabel;
-	    
-		/** Scroll Panel in case needed */
-	    private JScrollPane followerJScrollPane;
-	    
-	    public UserSearchR(List<User> l) throws TwitterException {
-	    	this.setSize(290, 400);
-	    	this.setPreferredSize(this.getSize());
-	    	followers = l;
-	    	updateFollowers(followers);
-	    }
-	    public void updateFollowers(List<User> users){
-	    	this.setSize(290, 400);
-	    	this.setPreferredSize(this.getSize());
-	    	this.followers = users;
-	        followerPanel = new JPanel();
-	        followerPanel.setLayout(new MigLayout("wrap 1"));
-	        getContentPane().setLayout(new MigLayout("wrap 1"));
 
-	        
-	        JLabel followersT = new JLabel("Users!");
-	        getContentPane().add(followersT);
-	        for (User u : followers) {
-	            try {
+		/** List of Users */
+		private List<User> followers;
+
+		/** the avatar URL */
+		private URL imageUrl;
+
+		/** Followers Panel width */
+		private int panelWidth = 250;
+
+		/** Sending Button */
+		private JLabel followerName;
+
+		/** Label holding the avatar */
+		private JLabel followerImg;
+
+		/** Panel holding the list */
+		private JPanel followerPanel;
+
+		/** Followers Name Label */
+		private JLabel followerTitleLabel;
+
+		/** Scroll Panel in case needed */
+		private JScrollPane followerJScrollPane;
+
+		private JButton followB;
+		public UserSearchR(List<User> l) throws TwitterException {
+			this.setSize(290, 400);
+			this.setPreferredSize(this.getSize());
+			followers = l;
+			updateFollowers(followers);
+		}
+		public void updateFollowers(List<User> users){
+			this.setSize(290, 400);
+			this.setPreferredSize(this.getSize());
+			this.followers = users;
+			followerPanel = new JPanel();
+			followerPanel.setLayout(new MigLayout("wrap 1"));
+			getContentPane().setLayout(new MigLayout("wrap 1"));
+
+
+			JLabel followersT = new JLabel("Users!");
+			getContentPane().add(followersT);
+			for (User u : followers) {
+				try {
 					imageUrl = new URL(u.getProfileImageURL());
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					//e.printStackTrace();
 				}
 
-	            followerName = new JLabel(u.getName());
+				followerName = new JLabel(u.getName());
 
-	            followerImg = new JLabel(new ImageIcon(imageUrl));
-	            followerImg.setSize(50, 50);
-	            followerImg.setPreferredSize(new Dimension(50, 50));
-	            followerImg.setMaximumSize(new Dimension(50, 50));
-	            JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2"));
-	            thisFollowerPanel.add(followerImg);
-	            thisFollowerPanel.add(followerName);
-	            followerPanel.add(thisFollowerPanel);
-	        }
-	        followerJScrollPane = new JScrollPane(followerPanel,
-	                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-	                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-	        getContentPane().add(followerJScrollPane);
-	        this.setVisible(true);
-	        this.pack();
-	    }
+				followerImg = new JLabel(new ImageIcon(imageUrl));
+				followerImg.setSize(50, 50);
+				followerImg.setPreferredSize(new Dimension(50, 50));
+				followerImg.setMaximumSize(new Dimension(50, 50));
+				JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2", "0 [] 0", "0 [] 0"));
+				thisFollowerPanel.add(followerImg);
+				thisFollowerPanel.add(followerName);
+				followB = new JButton("Follow");
+				followB.addActionListener(this);
+				thisFollowerPanel.add(followB, "span 2");
+				followerPanel.add(thisFollowerPanel);
+			}
+			followerJScrollPane = new JScrollPane(followerPanel,
+					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			getContentPane().add(followerJScrollPane);
+			this.setVisible(true);
+			this.pack();
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getSource() == followB){
+				engine.setFollower(followerName.getText());
+			}
+
+		}
 	}
-	
-	
+
+
 	public class ProFileEd extends JDialog implements ActionListener{
 
 		private final JPanel contentPanel = new JPanel();
@@ -1233,14 +1299,156 @@ public class TwitterAppGUI extends JFrame implements ActionListener {
 			if(e.getSource() == okButton){
 				//engine.updateProf(name, url, locat, textPane)
 			}
-			
+
 			if (e.getSource()== cancelButton)
 				this.dispose();
 		}
 
 	}
-	
-	
-	
 
+	public class TimerListener implements ActionListener{
+
+		private Timer timer = new Timer(30000, this);
+		public TimerListener() {
+		}
+		public void start(){
+			timer.start();
+		}
+
+		public void setRefreshTime(int delay){
+			timer.setDelay(delay*1000);
+			timer.stop();
+			timer.start();
+		}
+
+		public int getRefreshTime(){
+			return timer.getDelay()/1000;
+		}
+		public void actionPerformed(ActionEvent e) {
+			// your code goes here
+			if(lastTimeLine.equals("userTimeLine")){
+				timeLinePanelRefresh();
+			}
+			else if (lastTimeLine.equals("mentionsTimeLine")){
+				mentionsTimeLine();
+			}
+			else if(lastTimeLine.equals("homeTimeLine")){
+				mainTimeLine();
+			}
+		}
+	}
+
+	public class TweetTimer implements ActionListener{
+
+		private Timer timer = new Timer(2000, this);
+		public TweetTimer() {
+		}
+		public void start(){
+			timer.start();
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			// your code goes here
+			if(lastTimeLine.equals("userTimeLine")){
+				timeLinePanelRefresh();
+			}
+			else if (lastTimeLine.equals("mentionsTimeLine")){
+				mentionsTimeLine();
+			}
+			else if(lastTimeLine.equals("homeTimeLine")){
+				mainTimeLine();
+			}
+			timer.stop();
+		}
+	}
+
+	public class FollowersTimer implements ActionListener{
+
+		private Timer timer = new Timer(1500, this);
+		public FollowersTimer() {
+			timer.start();
+		}
+
+		public void actionPerformed(ActionEvent e) {
+			timer.stop();
+		}
+	}
+
+	public class whoToFollow extends JDialog implements ActionListener{
+		/** List of Users */
+		private List<User> followers;
+
+		/** the avatar URL */
+		private URL imageUrl;
+
+		/** Sending Button */
+		private JLabel followerName;
+
+		/** Label holding the avatar */
+		private JLabel followerImg;
+
+		/** Panel holding the list */
+		private JPanel followerPanel;
+
+		/** Scroll Panel in case needed */
+		private JScrollPane followerJScrollPane;
+
+		/** Follow Button */
+		private JButton followB;
+
+		public whoToFollow(List<User> l) throws TwitterException {
+			this.setSize(290, 400);
+			this.setPreferredSize(this.getSize());
+			followers =l;
+			updateFollowers(followers);
+		}
+		public void updateFollowers(List<User> users){
+			this.setSize(290, 400);
+			this.setPreferredSize(this.getSize());
+			this.followers = users;
+			followerPanel = new JPanel();
+			followerPanel.setLayout(new MigLayout("wrap 1"));
+			getContentPane().setLayout(new MigLayout("wrap 1"));
+
+
+			JLabel followersT = new JLabel("Users!");
+			getContentPane().add(followersT);
+			for (User u : followers) {
+				try {
+					imageUrl = new URL(u.getProfileImageURL());
+				} catch (MalformedURLException e) {
+					// TODO Auto-generated catch block
+					//e.printStackTrace();
+				}
+
+				followerName = new JLabel(u.getName());
+
+				followerImg = new JLabel(new ImageIcon(imageUrl));
+				followerImg.setSize(50, 50);
+				followerImg.setPreferredSize(new Dimension(50, 50));
+				followerImg.setMaximumSize(new Dimension(50, 50));
+				JPanel thisFollowerPanel = new JPanel(new MigLayout("wrap 2", "0 [] 0", "0 [] 0"));
+				thisFollowerPanel.add(followerImg);
+				thisFollowerPanel.add(followerName);
+				followB = new JButton("Follow");
+				followB.addActionListener(this);
+				thisFollowerPanel.add(followB, "span 2");
+				followerPanel.add(thisFollowerPanel);
+			}
+			followerJScrollPane = new JScrollPane(followerPanel,
+					JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+					JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			getContentPane().add(followerJScrollPane);
+			this.setVisible(true);
+			this.pack();
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			if(e.getSource() == followB){
+				engine.setFollower(followerName.getText());
+			}
+
+		}
+	}
 }

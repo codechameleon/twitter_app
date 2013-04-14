@@ -344,20 +344,20 @@ public class TweetUtils {
          try {
 	         do {
 	             users = twitter.searchUsers(user, page);
-	             for (User u : users) {
-	                 if (u.getStatus() != null) {
-	                     System.out.println("@" + u.getScreenName() 
-	                    		 + " - " + u.getStatus().getText());
-	                 } else {
-	                     // the user is protected
-	                     System.out.println("@" + u.getScreenName());
-	                 }
-	             }
+//	             for (User u : users) {
+//	                 if (u.getStatus() != null) {
+//	                     System.out.println("@" + u.getScreenName() 
+//	                    		 + " - " + u.getStatus().getText());
+//	                 } else {
+//	                     // the user is protected
+//	                     System.out.println("@" + u.getScreenName());
+//	                 }
+//	             }
 	             page++;
-	         } while (users.size() != 0 && page < 50);
+	         } while (users.size() != 0 && page < 2);
 	         return users;
      } catch (TwitterException te) {
-         te.printStackTrace();
+        te.printStackTrace();
          return null;
          
      }
@@ -425,15 +425,15 @@ public class TweetUtils {
 	public String [] getTrends() { 
 		Trends trends;
 		try {
-			trends = twitter.getLocationTrends(0);
+			trends = twitter.getPlaceTrends(23424977);
 	      String[] trendsArr = new String[trends.getTrends().length];
-	      for (int i = 0; i < trends.getTrends().length; i++) {
+	      for (int i = 0; i < trendsArr.length; i++) {
 	          trendsArr[i] = trends.getTrends()[i].getName();
 	          
 	          // prints trends
-	          System.out.println(trends.getTrends()[i].getName());
-	          return trendsArr;
+	         // System.out.println(trendsArr[i]);  
 	      } 
+	      return trendsArr;
 		} catch (TwitterException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -637,6 +637,30 @@ public class TweetUtils {
 				return false;
 			}
 		
+	}
+	
+	/*********************************************************
+	 * Follow a users
+	 * @param user name
+	 ********************************************************/
+	public void setFollower(String name) {
+		try {
+			twitter.createFriendship(name);
+		} catch (TwitterException e) {
+		}
+
+	}
+	
+	/*********************************************************
+	 * unFollow a users
+	 * @param user name
+	 ********************************************************/
+	public void unFollower(String name) {
+		try {
+			twitter.destroyFriendship(name);
+		} catch (TwitterException e) {
+		}
+
 	}
 
 }
